@@ -1,0 +1,39 @@
+{
+  "name": "visual-learner",
+  "version": "0.1.0",
+  "description": "Interactive visual learning from PDFs \u2014 powered by AI",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "electron"
+  ],
+  "scripts": {
+    "dev": "node scripts/start-dev.mjs",
+    "build": "npm run build:frontend && npm run build:electron",
+    "build:frontend": "cd frontend && vite build",
+    "build:electron": "cd electron && electron-builder",
+    "build:backend": "cd backend && pyinstaller main.py --name visual-learner-backend --distpath dist",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && vitest run",
+    "test:backend": "cd backend && pytest",
+    "test:coverage": "cd frontend && vitest run --coverage && cd ../backend && pytest --cov",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && vue-tsc --noEmit && eslint src/**/*.{ts,vue} && prettier --check src/**/*.{ts,vue,css,json}",
+    "lint:backend": "cd backend && black --check . && isort --check . && mypy app/",
+    "format": "npm run format:frontend && npm run format:backend",
+    "format:frontend": "cd frontend && prettier --write src/**/*.{ts,vue,css,json}",
+    "format:backend": "cd backend && black . && isort .",
+    "clean": "rm -rf frontend/dist frontend/node_modules/.vite electron/dist backend/dist",
+    "install:all": "npm install && cd backend && pip install -r requirements.txt"
+  },
+  "devDependencies": {
+    "concurrently": "8.2.2",
+    "cross-env": "7.0.3",
+    "rimraf": "5.0.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

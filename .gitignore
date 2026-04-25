@@ -1,30 +1,61 @@
-# Node / Electron
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
 dist/
 dist-electron/
-*.log
-.DS_Store
+release/
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
+# Environment
 .env
-.venv/
-venv/
-*.egg-info/
-.pytest_cache/
-
-# macOS
-*.app
-.AppleDouble
+.env.local
+.env.*.local
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 
-# Build
-build/
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
 coverage/
+.nyc_output/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.db
+*.sqlite
+*.sqlite3
+
+# Electron
+out/
+*.dmg
+*.zip
