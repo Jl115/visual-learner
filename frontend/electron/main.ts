@@ -1,12 +1,38 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import path from 'path'
-import { spawn } from 'child_process'
+import { spawn, ChildProcess } from 'child_process'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 let mainWindow: BrowserWindow | null = null
-let backendProcess: ReturnType<typeof spawn> | null = null
+let backendProcess: ChildProcess | null = null
+
+function getBackendPath(): string {
+  // In dev mode, run from source
+  if (process.env.VITE_DEV_SERVER_URL) {
+    return path.join(__dirname, '../../backend')
+  }
+  // In production, use bundled binary inside app resources
+  return path.join(process.resourcesPath, 'backend', 'visual-learner-backend')
+}
+
+function startBackend() {
+  const isDev = !!process.env.VITE_DEV_SERVER_URL
+  if (isDev) {
+    backendProcess = spawn(
+      'python',
+      ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'],
+      { cwd: getBackendPath(), stdio: 'pipe' }
+    )
+  } else {
+    backendProcess = spawn(getBackendPath(), ['--host', '127.0.0.1', '--port', '8000'], {
+      stdio: 'pipe',
+    })
+  }
+  backendProcess.stdout?.on('data', (data) => console.log(`[Backend] ${data}`))
+  backendProcess.stderr?.on('data', (data) => console.error(`[Backend] ${data}`))
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -32,17 +58,6 @@ function createWindow() {
   }
 
   mainWindow.on('closed', () => { mainWindow = null })
-}
-
-function startBackend() {
-  const backendPath = path.join(__dirname, '../../backend')
-  backendProcess = spawn(
-    'python',
-    ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', '8000'],
-    { cwd: backendPath, stdio: 'pipe' }
-  )
-  backendProcess.stdout?.on('data', (data) => console.log(`[Backend] ${data}`))
-  backendProcess.stderr?.on('data', (data) => console.error(`[Backend] ${data}`))
 }
 
 app.whenReady().then(() => {

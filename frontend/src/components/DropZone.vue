@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAppStore } from '../stores/app'
-import axios from 'axios'
+import { api, waitForBackend } from '../services/api'
 
 const store = useAppStore()
 const isDragOver = ref(false)
@@ -18,8 +18,7 @@ async function handleDrop(e: DragEvent) {
 async function handleFileSelect() {
   const path: string | null = await (window as any).api.selectPDF()
   if (!path) return
-  // For native file picker, we'll need a different flow
-  // but we'll simulate with a Blob from reading via Electron for now
+  // We will implement native file reading via Electron in Phase 2
 }
 
 async function uploadFile(file: File) {
@@ -27,13 +26,13 @@ async function uploadFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)
   try {
-    const { data } = await axios.post('http://127.0.0.1:8000/documents/upload', formData, {
+    await waitForBackend()
+    const { data } = await api.post('/documents/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     store.setDocument(data)
-    // Fetch graph after a brief processing moment
     setTimeout(async () => {
-      const graphRes = await axios.get(`http://127.0.0.1:8000/graph/${data.id}`)
+      const graphRes = await api.get(`/graph/${data.id}`)
       store.setGraph(graphRes.data)
       isLoading.value = false
     }, 1200)

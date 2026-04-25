@@ -1,17 +1,57 @@
 {
   "name": "visual-learner",
   "version": "0.1.0",
-  "description": "Interactive visual learning from PDFs",
+  "description": "Interactive visual learning from PDFs — standalone desktop app",
   "private": true,
-  "type": "module",
   "main": "frontend/dist-electron/main.js",
+  "type": "module",
   "scripts": {
     "dev": "cd frontend && vite",
-    "build": "cd frontend && vite build",
-    "electron:dev": "cd frontend && vite",
-    "electron:build": "cd frontend && vite build && electron-builder",
+    "build": "cd frontend && vue-tsc --noEmit && vite build",
+    "build:backend": "cd backend && pyinstaller build.spec --clean --noconfirm",
+    "build:app": "cd frontend && vite build && cd .. && electron-builder",
+    "dist": "npm run build:backend && npm run build:app",
     "lint": "eslint frontend/src --ext .ts,.vue",
     "test": "cd backend && pytest -v"
+  },
+  "build": {
+    "appId": "com.jl115.visual-learner",
+    "productName": "Visual Learner",
+    "directories": {
+      "output": "release",
+      "buildResources": "frontend/dist"
+    },
+    "files": [
+      "frontend/dist",
+      "frontend/dist-electron",
+      {
+        "from": "backend/dist",
+        "to": "backend",
+        "filter": ["**/*"]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "backend/dist",
+        "to": "backend",
+        "filter": ["**/*"]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.education",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        }
+      ],
+      "notarize": false,
+      "darkModeSupport": true
+    },
+    "asar": true,
+    "asarUnpack": [
+      "backend/**/*"
+    ]
   },
   "devDependencies": {
     "electron": "^31.0.0",
