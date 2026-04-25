@@ -27,7 +27,7 @@ async function uploadFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)
   try {
-    const { data } = await axios.post('http://127.0.0.1:8000/upload-pdf', formData, {
+    const { data } = await axios.post('http://127.0.0.1:8000/documents/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
     store.setDocument(data)

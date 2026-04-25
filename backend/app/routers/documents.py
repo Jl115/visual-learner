@@ -2,17 +2,16 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm import Session
 from app.dependencies import get_db
 from app.schemas import document as doc_schema
-from app.models import document, node, edge, quiz
+from app.models import Document
+from app.schemas.document import DocumentOut
 import fitz
-import uuid
 from datetime import datetime
 
 router = APIRouter()
 
-@router.post("/upload", response_model=doc_schema.DocumentOut)
+@router.post("/upload", response_model=DocumentOut)
 def upload_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
     content = file.file.read()
-    doc_id = str(uuid.uuid4())
 
     # Extract text
     fitz_doc = fitz.open(stream=content, filetype="pdf")
@@ -21,8 +20,7 @@ def upload_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
         raw_text += page.get_text()
     fitz_doc.close()
 
-    doc = document.Document(
-        id=doc_id,
+    doc = Document(
         filename=file.filename,
         raw_text=raw_text,
         created_at=datetime.utcnow(),
@@ -32,6 +30,6 @@ def upload_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
     db.refresh(doc)
     return doc
 
-@router.get("/{doc_id}", response_model=doc_schema.DocumentOut)
+@router.get("/{doc_id}", response_model=DocumentOut)
 def get_document(doc_id: str, db: Session = Depends(get_db)):
-    return db.query(document.Document).filter(document.Document.id == doc_id).first()
+    return db.query(Document).filter(Document.id == doc_id).first()
