@@ -1,2 +1,5 @@
-// Placeholder — will be replaced by Phase 1 implementation
-console.log('Visual Learner: Hello, J!')
+import { createApp } from 'vue'
+import App from '../App.vue'
+
+const app = createApp(App)
+app.mount('#app')

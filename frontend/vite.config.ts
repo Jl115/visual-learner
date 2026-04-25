@@ -3,6 +3,8 @@ import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 
 export default defineConfig({
+  // Base path MUST be relative for Electron file:// protocol in production
+  base: "./",
   plugins: [vue()],
   resolve: {
     alias: {
@@ -18,6 +20,10 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
+    rollupOptions: {
+      // Ensure SPA fallback works in Electron
+      input: resolve(__dirname, "index.html"),
+    },
   },
   server: {
     port: 5173,

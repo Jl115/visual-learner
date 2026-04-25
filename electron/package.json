@@ -1,0 +1,16 @@
+{
+  "name": "@visual-learner/electron",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./build/main.js",
+  "scripts": {
+    "dev": "vite --config ../electron.vite.config.ts",
+    "build": "vite build --config ../electron.vite.config.ts"
+  },
+  "devDependencies": {
+    "electron": "29.3.0",
+    "electron-builder": "24.13.3",
+    "vite-plugin-electron": "0.28.4",
+    "vite-plugin-electron-renderer": "0.14.5"
+  }
+}
