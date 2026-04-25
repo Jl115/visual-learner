@@ -1,3 +1,1 @@
-from fastapi import APIRouter
-
-router = APIRouter()
+from app.routers import documents, graph, quiz

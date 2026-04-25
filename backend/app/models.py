@@ -18,9 +18,22 @@ class Document(Base):
     edges = relationship("Edge", back_populates="document")
     quizzes = relationship("Quiz", back_populates="document")
 
+class Quiz(Base):
+    __tablename__ = "quizzes"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    document_id = Column(String, ForeignKey("documents.id"))
+    node_id = Column(String, ForeignKey("nodes.id"))
+    question = Column(Text, nullable=False)
+    options = Column(Text)  # JSON string
+    correct_index = Column(Integer, nullable=False)
+
+    document = relationship("Document", back_populates="quizzes")
+    node = relationship("Node", back_populates="quizzes")
+
 class Node(Base):
     __tablename__ = "nodes"
-    
+
     id = Column(String, primary_key=True, default=generate_uuid)
     document_id = Column(String, ForeignKey("documents.id"))
     label = Column(String, nullable=False)
@@ -29,28 +42,17 @@ class Node(Base):
     color = Column(String)
     x = Column(Float)
     y = Column(Float)
-    
+
     document = relationship("Document", back_populates="nodes")
+    quizzes = relationship("Quiz", back_populates="node")
 
 class Edge(Base):
     __tablename__ = "edges"
-    
-    id = Column(String, primary_key=True, default=generate_uuid)
-    document_id = Column(String, ForeignKey("documents.id"))
-    source_id = Column(String, nullable=False)
-    target_id = Column(String, nullable=False)
-    weight = Column(Float, default=1.0)
-    
-    document = relationship("Document", back_populates="edges")
 
-class Quiz(Base):
-    __tablename__ = "quizzes"
-    
     id = Column(String, primary_key=True, default=generate_uuid)
     document_id = Column(String, ForeignKey("documents.id"))
-    node_id = Column(String, nullable=False)
-    question = Column(Text, nullable=False)
-    options = Column(String)  # JSON array
-    correct_index = Column(Integer, nullable=False)
-    
-    document = relationship("Document", back_populates="quizzes")
+    source_id = Column(String, ForeignKey("nodes.id"))
+    target_id = Column(String, ForeignKey("nodes.id"))
+    weight = Column(Float, default=1.0)
+
+    document = relationship("Document", back_populates="edges")

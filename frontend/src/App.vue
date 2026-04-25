@@ -4,6 +4,7 @@ import LearningGraph from './components/LearningGraph.vue'
 import SidePanel from './components/SidePanel.vue'
 import TitleBar from './components/TitleBar.vue'
 import StatsBadge from './components/StatsBadge.vue'
+import QuizModal from './components/QuizModal.vue'
 import { useAppStore } from './stores/app'
 
 const store = useAppStore()
@@ -28,13 +29,14 @@ const store = useAppStore()
         </nav>
       </aside>
       
-      <!-- Canvas Area -->
-      <main class="canvas-area">
-        <DropZone v-if="!store.hasDocument" />
-        <LearningGraph v-else />
-        <SidePanel v-if="store.activeNode" />
-        <StatsBadge />
-      </main>
+  <!-- Canvas Area -->
+  <main class="canvas-area">
+    <DropZone v-if="!store.hasDocument" />
+    <LearningGraph v-else />
+    <SidePanel v-if="store.activeNode" />
+    <QuizModal />
+    <StatsBadge />
+  </main>
     </div>
   </div>
 </template>

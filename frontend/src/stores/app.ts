@@ -11,10 +11,11 @@ export const useAppStore = defineStore('app', () => {
   const totalScore = ref(0)
   const streak = ref(0)
   const currentQuiz = ref<any>(null)
+  const nodeTitle = ref('')
+  const nodeSummary = ref('')
+  const nodeQuizzes = ref<any[]>([])
 
-  const nodeTitle = computed(() => activeNode.value ?? '')
   const nodeCategory = computed(() => 'Topic')
-  const nodeSummary = computed(() => 'Explore this topic to unlock quizzes and earn points. Click the quiz button when you feel ready!')
 
   function setDocument(data: any) {
     hasDocument.value = true
@@ -31,6 +32,7 @@ export const useAppStore = defineStore('app', () => {
 
   function closePanel() {
     activeNode.value = null
+    currentQuiz.value = null
   }
 
   function resetZoom() {
@@ -47,8 +49,8 @@ export const useAppStore = defineStore('app', () => {
 
   return {
     hasDocument, documentId, graphData,
-    activeNode, physicsEnabled, learnedCount, totalScore, streak,
-    nodeTitle, nodeCategory, nodeSummary, currentQuiz,
+    activeNode, physicsEnabled, learnedCount, totalScore, streak, currentQuiz,
+    nodeTitle, nodeSummary, nodeCategory, nodeQuizzes,
     setDocument, setGraph, setActiveNode, closePanel,
     resetZoom, togglePhysics, openQuiz
   }
