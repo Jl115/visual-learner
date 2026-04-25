@@ -1,0 +1,7 @@
+{
+  // VS Code workspace settings — path aliases + TypeScript IntelliSense
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "path-intellisense.mappings": {
+    "@": "${workspaceFolder}/frontend/src"
+  }
+}
