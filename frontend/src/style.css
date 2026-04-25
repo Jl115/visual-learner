@@ -1,26 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap');
 
+/*
+ * CSS Custom Properties — runtime mirror of DESIGN.md tokens.
+ * Keep in sync with root DESIGN.md; values are derived from the token spec.
+ * Categories: colors, typography, layout (spacing/radii).
+ */
 :root {
-  /* Colors */
-  --color-brand: #6366f1;
-  --color-brand-soft: #e0e7ff;
-  --color-accent: #818cf8;
-  --color-accent-soft: #ede9fe;
-  --color-bg: #f8fafc;
-  --color-bg-soft: #f1f5f9;
-  --color-surface: #ffffff;
-  --color-text: #1e1e2e;
-  --color-text-secondary: #64748b;
-  --color-border: #e2e8f0;
-  --color-success: #22c55e;
-  --color-warn: #f59e0b;
-  --color-error: #ef4444;
+  /* ── Colors ── */
+  --color-brand: #6366f1;        /* {colors.brand} */
+  --color-brand-soft: #e0e7ff;    /* {colors.brand-soft} */
+  --color-accent: #818cf8;        /* {colors.accent} */
+  --color-accent-soft: #ede9fe;   /* {colors.accent-soft} */
+  --color-bg: #f8fafc;           /* {colors.bg} */
+  --color-bg-soft: #f1f5f9;      /* {colors.bg-soft} */
+  --color-surface: #ffffff;       /* {colors.surface} */
+  --color-text: #1e1e2e;         /* {colors.text} */
+  --color-text-secondary: #64748b;/* {colors.text-secondary} */
+  --color-border: #e2e8f0;       /* {colors.border} */
+  --color-success: #22c55e;       /* {colors.success} */
+  --color-warn: #f59e0b;         /* {colors.warn} */
+  --color-error: #ef4444;        /* {colors.error} */
 
-  /* Radii */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  /* ── Radii ── */
+  --radius-sm: 6px;  /* {rounded.sm} */
+  --radius-md: 12px; /* {rounded.md} */
+  --radius-lg: 20px; /* {rounded.lg} */
+  --radius-xl: 28px; /* {rounded.xl} */
+
+  /* ── Spacing ── */
+  --space-sm: 8px;  /* {spacing.sm} */
+  --space-md: 16px; /* {spacing.md} */
+  --space-lg: 24px; /* {spacing.lg} */
 }
 
 * {
