@@ -1,0 +1,238 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  # ════════════════════════════════════════
+  # 1. PR CHECK: Is this a memo-bot PR?
+  # ════════════════════════════════════════
+  check-bot-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      is_bot_pr: ${{ steps.check.outputs.is_bot }}
+    steps:
+      - id: check
+        run: |
+          # Check if PR branch matches our auto-code naming convention
+          BRANCH_NAME="${{ github.head_ref }}"
+          if echo "$BRANCH_NAME" | grep -qE '^issue-[0-9]+-memo$'; then
+            echo "is_bot=true" >> $GITHUB_OUTPUT
+            echo "is_bot=true"
+          else
+            echo "is_bot=false" >> $GITHUB_OUTPUT
+            echo "is_bot=false"
+          fi
+
+  # ════════════════════════════════════════
+  # 2. STATIC ANALYSIS (Frontend)
+  # ════════════════════════════════════════
+  frontend-static:
+    runs-on: ubuntu-latest
+    needs: check-bot-pr
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci # uses package-lock.json for determinism
+
+      - name: TypeScript type check
+        id: tsc
+        run: npx vue-tsc --noEmit
+        working-directory: ./frontend
+        continue-on-error: true # Don't fail immediately, let all checks run
+
+      - name: ESLint check
+        id: lint
+        run: npm run lint
+        working-directory: ./frontend
+        continue-on-error: true
+
+      - name: Prettier check
+        id: format
+        run: npx prettier --check "src/**/*.{ts,vue,css}" --ignore-path .prettierignore
+        working-directory: ./frontend
+        continue-on-error: true
+
+      - name: Report static results
+        if: always()
+        run: |
+          echo "TypeScript: ${{ steps.tsc.outcome }}"
+          echo "ESLint: ${{ steps.lint.outcome }}"
+          echo "Prettier: ${{ steps.format.outcome }}"
+          if [[ "${{ steps.tsc.outcome }}" == "failure" || "${{ steps.lint.outcome }}" == "failure" || "${{ steps.format.outcome }}" == "failure" ]]; then
+            echo "⚠️ Static analysis found issues. Check logs above."
+            exit 1
+          fi
+
+  # ════════════════════════════════════════
+  # 3. UNIT TESTS (Frontend)
+  # ════════════════════════════════════════
+  frontend-tests:
+    runs-on: ubuntu-latest
+    needs: frontend-static
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Vitest
+        id: vitest
+        run: npm run test:unit -- --run
+        working-directory: ./frontend
+        continue-on-error: false
+
+      - name: Coverage report (if available)
+        run: |
+          if [ -f "./frontend/coverage/index.html" ]; then
+            echo "Coverage report generated"
+          fi
+        continue-on-error: true
+
+  # ════════════════════════════════════════
+  # 4. STATIC ANALYSIS (Backend)
+  # ════════════════════════════════════════
+  backend-static:
+    runs-on: ubuntu-latest
+    needs: check-bot-pr
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install black isort pylint mypy
+
+      - name: Black format check
+        id: black
+        run: black --check backend/
+        continue-on-error: true
+
+      - name: isort import order check
+        id: isort
+        run: isort --check-only backend/
+        continue-on-error: true
+
+      - name: mypy type check
+        id: mypy
+        run: mypy --strict backend/app/
+        continue-on-error: true
+
+      - name: Report backend static results
+        if: always()
+        run: |
+          echo "Black: ${{ steps.black.outcome }}"
+          echo "isort: ${{ steps.isort.outcome }}"
+          echo "mypy: ${{ steps.mypy.outcome }}"
+          if [[ "${{ steps.black.outcome }}" == "failure" || "${{ steps.isort.outcome }}" == "failure" || "${{ steps.mypy.outcome }}" == "failure" ]]; then
+            echo "⚠️ Backend static analysis found issues. Check logs above."
+            exit 1
+          fi
+
+  # ════════════════════════════════════════
+  # 5. UNIT TESTS (Backend)
+  # ════════════════════════════════════════
+  backend-tests:
+    runs-on: ubuntu-latest
+    needs: backend-static
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov
+
+      - name: Run pytest
+        run: pytest backend/tests/ --cov=backend/app --cov-report=term-missing
+
+  # ════════════════════════════════════════
+  # 6. BUILD VERIFICATION
+  # ════════════════════════════════════════
+  build-check:
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-tests]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install all dependencies
+        run: |
+          npm ci
+          pip install -r requirements.txt
+
+      - name: Build frontend (production)
+        run: npm run build
+        working-directory: ./frontend
+
+      - name: Build Electron
+        run: npm run build:electron
+        continue-on-error: true # Electron builds may fail on non-Mac runners
+
+  # ════════════════════════════════════════
+  # 7. PR REQUIREMENTS GATE
+  # ════════════════════════════════════════
+  pr-requirements:
+    runs-on: ubuntu-latest
+    if: always() && (needs.frontend-static.result == 'success' || needs.frontend-static.result == 'skipped') && (needs.backend-static.result == 'success' || needs.backend-static.result == 'skipped')
+    needs: [build-check]
+    steps:
+      - name: Summary
+        run: |
+          echo "╔═══════════════════════════════════════════════════════╗"
+          echo "║          PR VALIDATION COMPLETE                       ║"
+          echo "╠═══════════════════════════════════════════════════════╣"
+          echo "║ Frontend Static: ${{ needs.frontend-static.result }}"
+          echo "║ Frontend Tests:   ${{ needs.frontend-tests.result }}"
+          echo "║ Backend Static:   ${{ needs.backend-static.result }}"
+          echo "║ Backend Tests:     ${{ needs.backend-tests.result }}"
+          echo "║ Build Check:      ${{ needs.build-check.result }}"
+          echo "╚═══════════════════════════════════════════════════════╝"
+          
+          if [[ "${{ needs.frontend-static.result }}" == "failure" || "${{ needs.backend-static.result }}" == "failure" || "${{ needs.frontend-tests.result }}" == "failure" || "${{ needs.backend-tests.result }}" == "failure" ]]; then
+            echo "❌ PR VALIDATION FAILED"
+            exit 1
+          else
+            echo "✅ PR VALIDATION PASSED — Ready for review"
+          fi
