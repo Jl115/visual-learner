@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Colors */
+  --color-brand: #6366f1;
+  --color-brand-soft: #e0e7ff;
+  --color-accent: #818cf8;
+  --color-accent-soft: #ede9fe;
+  --color-bg: #f8fafc;
+  --color-bg-soft: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-text: #1e1e2e;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+  --color-success: #22c55e;
+  --color-warn: #f59e0b;
+  --color-error: #ef4444;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Public Sans', system-ui, -apple-system, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
+}
+
+#app { width: 100vw; height: 100vh; }
+
+/* Smooth scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-secondary); }
