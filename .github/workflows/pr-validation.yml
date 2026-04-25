@@ -46,20 +46,30 @@ jobs:
       - name: Install dependencies
         run: npm ci # uses package-lock.json for determinism
 
+      - name: Check if source files exist
+        id: check-frontend-files
+        run: |
+          FILE_COUNT=$(find src -type f \( -name "*.ts" -o -name "*.vue" \) | wc -l)
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "Found $FILE_COUNT frontend source files"
+
       - name: TypeScript type check
         id: tsc
+        if: steps.check-frontend-files.outputs.file_count != '0'
         run: npx vue-tsc --noEmit
         working-directory: ./frontend
         continue-on-error: true # Don't fail immediately, let all checks run
 
       - name: ESLint check
         id: lint
+        if: steps.check-frontend-files.outputs.file_count != '0'
         run: npm run lint
         working-directory: ./frontend
         continue-on-error: true
 
       - name: Prettier check
         id: format
+        if: steps.check-frontend-files.outputs.file_count != '0'
         run: npx prettier --check "src/**/*.{ts,vue,css}" --ignore-path .prettierignore
         working-directory: ./frontend
         continue-on-error: true
@@ -127,18 +137,28 @@ jobs:
           pip install -r requirements.txt
           pip install black isort pylint mypy
 
+      - name: Check if Python source files exist
+        id: check-backend-files
+        run: |
+          FILE_COUNT=$(find backend/ -type f -name "*.py" | wc -l)
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
+          echo "Found $FILE_COUNT Python source files"
+
       - name: Black format check
         id: black
+        if: steps.check-backend-files.outputs.file_count != '0'
         run: black --check backend/
         continue-on-error: true
 
       - name: isort import order check
         id: isort
+        if: steps.check-backend-files.outputs.file_count != '0'
         run: isort --check-only backend/
         continue-on-error: true
 
       - name: mypy type check
         id: mypy
+        if: steps.check-backend-files.outputs.file_count != '0'
         run: mypy --strict backend/app/
         continue-on-error: true
 
