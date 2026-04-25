@@ -1,0 +1,36 @@
+appId: com.visuallearner.app
+productName: "VisualLearner"
+copyright: "Copyright © 2026"
+directories:
+  output: "release"
+  buildResources: "resources"
+files:
+  - "frontend/dist/**/*"
+  - "electron/build/**/*"
+  - "backend/dist/**/*"
+  - "!**/*.map"
+extraResources:
+  - from: "backend/dist"
+    to: "backend"
+    filter:
+      - "**/*"
+  - from: ".env.example"
+    to: ".env.example"
+win:
+  target:
+    - target: "nsis"
+      arch:
+        - "x64"
+mac:
+  category: "public.app-category.education"
+  target:
+    - target: "dmg"
+      arch:
+        - "arm64"
+        - "x64"
+linux:
+  category: "Education"
+  target:
+    - target: "AppImage"
+      arch:
+        - "x64"
