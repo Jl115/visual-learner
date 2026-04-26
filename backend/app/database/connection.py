@@ -1,8 +1,14 @@
+"""Database connection manager."""
+from __future__ import annotations
+
 import os
+from contextlib import contextmanager
 from pathlib import Path
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
+
+from sqlalchemy import create_engine, event, text
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.config import get_settings
 
@@ -28,16 +34,30 @@ class DatabaseConnection:
             db_path = Path(self._database_url.replace("sqlite:///", ""))
             db_path = db_path.expanduser()
             os.makedirs(db_path.parent, exist_ok=True)
-        self._engine = create_engine(
-            self._database_url,
-            connect_args={"check_same_thread": False},
-        )
+        self._engine = self._create_engine()
         self._session_maker = sessionmaker(
             autocommit=False,
             autoflush=False,
             bind=self._engine,
             expire_on_commit=False,
         )
+
+    def _create_engine(self):
+        """Create SQLAlchemy engine with SQLite optimisations."""
+        engine = create_engine(
+            self._database_url,
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+            echo=False,
+        )
+
+        @event.listens_for(engine, "connect")
+        def _set_sqlite_pragma(dbapi_conn, connection_record):
+            cursor = dbapi_conn.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
+
+        return engine
 
     @property
     def engine(self):
@@ -55,9 +75,43 @@ class DatabaseConnection:
         finally:
             db.close()
 
-    def create_tables(self, base) -> None:
+    @contextmanager
+    def session_scope(self):
+        """Provide a transactional scope around a series of operations."""
+        session = self._session_maker()
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    def create_tables(self, base=None) -> None:
         """Create all tables registered with the declarative base."""
-        base.metadata.create_all(bind=self._engine)
+        if base is None:
+            from app.database.models import Base
+        else:
+            Base = base
+        Base.metadata.create_all(bind=self._engine)
+
+    def drop_tables(self, base=None) -> None:
+        """Drop all tables registered with the declarative base."""
+        if base is None:
+            from app.database.models import Base
+        else:
+            Base = base
+        Base.metadata.drop_all(bind=self._engine)
+
+    def health_check(self) -> dict:
+        """Verify database connectivity and foreign key enforcement."""
+        try:
+            with self.session_scope() as session:
+                result = session.execute(text("PRAGMA foreign_keys")).scalar()
+            return {"status": "ok", "foreign_keys_enabled": bool(result)}
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
 
 
 def get_db() -> Generator[Session, None, None]:
