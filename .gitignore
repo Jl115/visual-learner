@@ -38,6 +38,7 @@ Thumbs.db
 
 # Backend
 __pycache__/
+.venv/
 *.py[cod]
 *$py.class
 *.so
