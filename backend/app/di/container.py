@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 
 from app.config import Settings, get_settings
 from app.repositories.document_repo import DocumentRepository
+from app.repositories.edge_repo import EdgeRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
 from app.repositories.score_repo import ScoreRepository
@@ -36,6 +37,7 @@ class Container:
         self._graph_service: GraphService | None = None
         self._quiz_engine: QuizEngine | None = None
         self._document_repo: DocumentRepository | None = None
+        self._edge_repo: EdgeRepository | None = None
         self._node_repo: NodeRepository | None = None
         self._quiz_repo: QuizRepository | None = None
         self._score_repo: ScoreRepository | None = None
@@ -86,6 +88,7 @@ class Container:
                 repo=self.node_repository,
                 ollama=self.ollama_client,
                 builder=self.graph_builder,
+                edge_repo=self.edge_repository,
             )
         return self._graph_service
 
@@ -109,6 +112,12 @@ class Container:
         if self._node_repo is None:
             self._node_repo = NodeRepository(self._resolve_db())
         return self._node_repo
+
+    @property
+    def edge_repository(self) -> EdgeRepository:
+        if self._edge_repo is None:
+            self._edge_repo = EdgeRepository(self._resolve_db())
+        return self._edge_repo
 
     @property
     def quiz_repository(self) -> QuizRepository:
@@ -142,6 +151,7 @@ class Container:
         """Release the current DB session — useful between requests."""
         self._db = None
         self._document_repo = None
+        self._edge_repo = None
         self._node_repo = None
         self._quiz_repo = None
         self._score_repo = None
