@@ -1,6 +1,6 @@
 from typing import List
-from app.domains.node import Node
-from app.domains.edge import Edge
+from app.entities.node import Node
+from app.entities.edge import Edge
 
 
 class GraphBuilder:
