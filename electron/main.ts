@@ -1,7 +1,7 @@
 /**
  * Electron Main Process
- * Spawns the FastAPI backend and loads the frontend via Vite in dev,
- * or from the `dist/` bundle in production.
+ * Creates the browser window, manages app lifecycle,
+ * starts the FastAPI backend, and exposes IPC handlers for the renderer.
  */
 
 import { app, BrowserWindow, ipcMain } from 'electron'
@@ -38,7 +38,7 @@ function createWindow() {
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')
   } else {
-    mainWindow.loadFile(join(__dirname, '../frontend/dist/index.html'))
+    mainWindow.loadFile(join(__dirname, '../../frontend/dist/index.html'))
   }
 
   mainWindow.on('closed', () => {
@@ -82,14 +82,14 @@ function killBackend() {
   }
 }
 
-// ── IPC Handlers ─────────────────────────────────────
+// ── IPC Handlers ───────────────────────────────────
 
-ipcMain.handle('read-file-buffer', async (_event, filePath: string) => {
+ipcMain.handle('read-file-buffer', async (_event, filePath: string): Promise<Uint8Array> => {
   const buffer = await readFile(filePath)
-  return buffer
+  return new Uint8Array(buffer)
 })
 
-ipcMain.handle('get-app-version', () => {
+ipcMain.handle('get-app-version', (): string => {
   return app.getVersion()
 })
 
