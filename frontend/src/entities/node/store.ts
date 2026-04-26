@@ -23,8 +23,12 @@ export const useNodeStore = defineStore('nodes', () => {
   // ── Getters ────────────────────────────────────
   const all = computed(() => items.value)
   const count = computed(() => items.value.length)
-  const active = computed(() => items.value.find((n) => n.id === activeId.value) ?? null)
-  const byDocId = computed(() => (docId: number) => items.value.filter((n) => n.docId === docId))
+  const active = computed(
+    () => items.value.find((n) => n.id === activeId.value) ?? null
+  )
+  const byDocId = computed(
+    () => (docId: number) => items.value.filter((n) => n.docId === docId)
+  )
 
   // ── Actions ─────────────────────────────────────
   const setAll = (nodes: NodeEntity[]) => {

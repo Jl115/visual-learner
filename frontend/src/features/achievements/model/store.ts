@@ -26,7 +26,9 @@ export const useAchievementsStore = defineStore('achievements', () => {
   const totalScore = ref(0)
 
   // ── Getters ────────────────────────────────────
-  const unlockedCount = computed(() => badges.value.filter((b) => b.unlockedAt !== null).length)
+  const unlockedCount = computed(
+    () => badges.value.filter((b) => b.unlockedAt !== null).length
+  )
   const totalBadges = computed(() => badges.value.length)
   const progressPercent = computed(() => {
     if (totalBadges.value === 0) return 0

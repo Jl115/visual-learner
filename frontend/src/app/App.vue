@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+
 import { useAppStore } from '@/shared/lib/store'
 
 const appStore = useAppStore()
