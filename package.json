@@ -13,7 +13,7 @@
     "dev:electron": "cd electron && npx vite -c ../electron.vite.config.ts",
     "build": "npm run build:frontend && npm run build:electron",
     "build:frontend": "cd frontend && npx vite build",
-    "build:electron": "npx vite build -c electron.vite.config.ts && npx electron-builder",
+    "build:electron": "node scripts/build-electron.mjs && npx electron-builder",
     "build:backend": "cd backend && pyinstaller main.py --name visual-learner-backend --distpath dist",
     "test": "npm run test:frontend && npm run test:backend",
     "test:frontend": "cd frontend && vitest run",
@@ -25,15 +25,18 @@
     "format": "npm run format:frontend && npm run format:backend",
     "format:frontend": "cd frontend && npx prettier --write src/**/*.{ts,vue,css,json}",
     "format:backend": "cd backend && npx black . && npx isort .",
-    "clean": "rm -rf frontend/dist electron/build backend/dist",
-    "clean:all": "rm -rf node_modules frontend/node_modules backend/__pycache__ electron/build frontend/dist backend/dist",
-    "postinstall": "npm install --workspaces",
+    "clean": "rm -rf frontend/dist dist-electron backend/dist",
+    "clean:all": "rm -rf node_modules frontend/node_modules backend/__pycache__ dist-electron frontend/dist backend/dist",
     "install:all": "npm install && cd backend && pip install -r requirements.txt"
   },
   "devDependencies": {
     "concurrently": "8.2.2",
     "cross-env": "7.0.3",
-    "rimraf": "5.0.5","electron-builder":"24.13.3"
+    "electron": "29.3.0",
+    "electron-builder": "24.13.3",
+    "rimraf": "5.0.5",
+    "vite-plugin-electron": "0.28.4",
+    "vite-plugin-electron-renderer": "0.14.5"
   },
   "engines": {
     "node": ">=20.0.0",
