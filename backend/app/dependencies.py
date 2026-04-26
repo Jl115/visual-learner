@@ -23,6 +23,7 @@ from app.di.container import Container, get_container
 from app.repositories.document_repo import DocumentRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
+from app.repositories.score_repo import ScoreRepository
 from app.services.ollama_client import OllamaClient
 from app.services.graph_service import GraphService
 from app.services.quiz_service import QuizEngine
@@ -59,6 +60,10 @@ def get_node_repo(container: ContainerDep) -> NodeRepository:
 
 def get_quiz_repo(container: ContainerDep) -> QuizRepository:
     return container.quiz_repository
+
+
+def get_score_repo(container: ContainerDep) -> ScoreRepository:
+    return container.score_repository
 
 
 # ------------------------------------------------------------------

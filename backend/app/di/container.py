@@ -14,6 +14,7 @@ from app.config import Settings, get_settings
 from app.repositories.document_repo import DocumentRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
+from app.repositories.score_repo import ScoreRepository
 from app.services.ollama_client import OllamaClient
 from app.services.nlp_pipeline import NLPPipeline
 from app.services.graph_service import GraphBuilder, GraphService
@@ -37,6 +38,7 @@ class Container:
         self._document_repo: DocumentRepository | None = None
         self._node_repo: NodeRepository | None = None
         self._quiz_repo: QuizRepository | None = None
+        self._score_repo: ScoreRepository | None = None
 
     # ------------------------------------------------------------------
     # Settings
@@ -114,6 +116,12 @@ class Container:
             self._quiz_repo = QuizRepository(self._resolve_db())
         return self._quiz_repo
 
+    @property
+    def score_repository(self) -> ScoreRepository:
+        if self._score_repo is None:
+            self._score_repo = ScoreRepository(self._resolve_db())
+        return self._score_repo
+
     # ------------------------------------------------------------------
     # request-scoped helpers
     # ------------------------------------------------------------------
@@ -136,6 +144,7 @@ class Container:
         self._document_repo = None
         self._node_repo = None
         self._quiz_repo = None
+        self._score_repo = None
         self._graph_service = None
         self._quiz_engine = None
         return self
