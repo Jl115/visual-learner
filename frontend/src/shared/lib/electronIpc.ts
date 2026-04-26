@@ -1,9 +1,12 @@
-import { ipcRenderer } from 'electron'
+/**
+ * Front-end helper to call Electron main-process IPC channels
+ * typed via the preload script `window.api` object.
+ */
 
-export async function ipcInvoke<T = unknown>(channel: string, ...args: unknown[]): Promise<T> {
-  return ipcRenderer.invoke(channel, ...args)
+export async function readFileBuffer(filePath: string): Promise<Uint8Array> {
+  return window.api.readFileBuffer(filePath)
 }
 
-export function ipcSend(channel: string, ...args: unknown[]): void {
-  ipcRenderer.send(channel, ...args)
+export async function getAppVersion(): Promise<string> {
+  return window.api.getAppVersion()
 }

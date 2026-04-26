@@ -3,3 +3,10 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+interface Window {
+  api: {
+    readFileBuffer(filePath: string): Promise<Uint8Array>
+    getAppVersion(): Promise<string>
+  }
+}

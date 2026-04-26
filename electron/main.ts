@@ -4,9 +4,10 @@
  * or from the `dist/` bundle in production.
  */
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { spawn, ChildProcess } from 'node:child_process'
 import { join } from 'node:path'
+import { readFile } from 'node:fs/promises'
 
 const isDev = !app.isPackaged
 
@@ -15,8 +16,10 @@ let backendProcess: ChildProcess | null = null
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 900,
+    width: 1200,
+    height: 800,
+    frame: false,
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -32,7 +35,6 @@ function createWindow() {
     if (isDev) mainWindow?.webContents.openDevTools()
   })
 
-  // Load URL
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')
   } else {
@@ -45,8 +47,6 @@ function createWindow() {
 }
 
 function startBackend() {
-  // In dev: run the Python source directly
-  // In prod: run the pyinstalled binary
   const backendPath = isDev
     ? join(process.cwd(), 'backend', 'main.py')
     : join(process.resourcesPath, 'backend', 'visual-learner-backend')
@@ -82,7 +82,18 @@ function killBackend() {
   }
 }
 
-// ── App Lifecycle ──────────────────────────────────
+// ── IPC Handlers ─────────────────────────────────────
+
+ipcMain.handle('read-file-buffer', async (_event, filePath: string) => {
+  const buffer = await readFile(filePath)
+  return buffer
+})
+
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion()
+})
+
+// ── App Lifecycle ────────────────────────────────────
 
 app.whenReady().then(() => {
   startBackend()
