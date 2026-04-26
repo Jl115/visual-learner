@@ -1,5 +1,5 @@
 from typing import List
-from app.domains.quiz import Quiz, Question
+from app.entities.quiz import Quiz, Question
 from app.services.ollama_client import OllamaClient
 
 

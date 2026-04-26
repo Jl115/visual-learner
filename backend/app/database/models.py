@@ -14,10 +14,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import declarative_base, relationship
 
-from app.domains.document import Document
-from app.domains.node import Node
-from app.domains.edge import Edge
-from app.domains.quiz import Quiz, Question
+from app.entities.document import Document
+from app.entities.node import Node
+from app.entities.edge import Edge
+from app.entities.quiz import Quiz, Question
 
 Base = declarative_base()
 
