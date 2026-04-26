@@ -1,15 +1,12 @@
 <template>
-  <div id="app">
-    <router-view />
+  <div id="app" class="flex h-screen w-screen overflow-hidden">
+    <Sidebar class="shrink-0" />
+    <main class="flex-1 overflow-auto bg-bg-primary">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useAppStore } from '@/shared/lib/store'
-
-const appStore = useAppStore()
-onMounted(() => {
-  appStore.init()
-})
+import Sidebar from '@/widgets/Sidebar.vue'
 </script>
