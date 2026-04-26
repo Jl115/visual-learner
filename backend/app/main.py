@@ -16,6 +16,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.application import Application
+from app.config import get_settings
 from app.middleware.error_handler import setup_exception_handlers
 
 logger = logging.getLogger(__name__)
@@ -23,29 +24,23 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    logger.info("🚀  Lifespan startup")
+    settings = get_settings()
+    settings.configure_logging()
+    logger.info("🚀  Lifespan startup  |  version=%s", settings.APP_VERSION)
 
     # --- STARTUP ---
-    # db = getattr(app.state, "db", None)
-    # if db:
-    #     await db.create_tables()
-    #     logger.info("✅  DB tables ensured")
-
     yield
 
     # --- SHUTDOWN ---
-    # if db:
-    #     await db.close()
-    #     logger.info("🛑  DB connections closed")
-
     logger.info("👋  Lifespan shutdown complete")
 
 
 def create_app(**kwargs: Any) -> FastAPI:
+    settings = get_settings()
     app = FastAPI(
         title="Visual Learner API",
         description="Backend service for the Visual Learner knowledge-management platform.",
-        version="0.1.0",
+        version=settings.APP_VERSION,
         lifespan=lifespan,
         **kwargs,
     )
@@ -81,7 +76,7 @@ def create_app(**kwargs: Any) -> FastAPI:
 
     @app.get("/health", tags=["Health"])
     async def health() -> dict[str, str]:
-        return {"status": "ok", "version": "0.1.0"}
+        return {"status": "ok", "version": settings.APP_VERSION}
 
     return app
 
