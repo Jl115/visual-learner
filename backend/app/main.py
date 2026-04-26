@@ -1,0 +1,98 @@
+"""
+FastAPI Application Factory — single entry point for the Visual Learner backend.
+
+Usage:
+    uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 --reload
+    # or
+    python -m app.main
+"""
+from __future__ import annotations
+
+import logging
+from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.application import Application
+from app.middleware.error_handler import setup_exception_handlers
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    logger.info("🚀  Lifespan startup")
+
+    # --- STARTUP ---
+    # db = getattr(app.state, "db", None)
+    # if db:
+    #     await db.create_tables()
+    #     logger.info("✅  DB tables ensured")
+
+    yield
+
+    # --- SHUTDOWN ---
+    # if db:
+    #     await db.close()
+    #     logger.info("🛑  DB connections closed")
+
+    logger.info("👋  Lifespan shutdown complete")
+
+
+def create_app(**kwargs: Any) -> FastAPI:
+    app = FastAPI(
+        title="Visual Learner API",
+        description="Backend service for the Visual Learner knowledge-management platform.",
+        version="0.1.0",
+        lifespan=lifespan,
+        **kwargs,
+    )
+
+    # CORS
+    _origins: list[str] = [
+        "*",
+        "file://*",
+        "http://localhost:*",
+        "https://localhost:*",
+    ]
+
+    env = kwargs.get("env", "dev")
+    if env == "production":
+        _origins = [
+            "file://",
+            "http://localhost:*",
+        ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    logger.debug("🌐  CORS configured for origins: %s", _origins)
+
+    application = Application(app)
+    application.register_routes()
+    application.register_middleware()
+    setup_exception_handlers(app)
+
+    @app.get("/health", tags=["Health"])
+    async def health() -> dict[str, str]:
+        return {"status": "ok", "version": "0.1.0"}
+
+    return app
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "app.main:create_app",
+        factory=True,
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+    )
