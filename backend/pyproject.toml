@@ -1,19 +1,16 @@
-# Backend Python Tooling Configuration
-# Enables strict mypy checking for the FastAPI + SQLAlchemy codebase
-
-[tool.mypy]
-python_version = "3.11"
-strict = true
-warn_return_any = true
-warn_unused_ignores = true
-mypy_path = "backend"
-pythonpath = ["backend", "backend/app"]
-namespace_packages = true
-explicit_package_bases = true
-
-[[tool.mypy.overrides]]
-module = [
-    "uvicorn.*",
-    "pyinstaller.*",
+"""Test pyproject.toml with pytest configuration."""
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = """
+    --strict-markers
+    -ra
+    -q
+    --tb=short
+"""
+pythonpath = [".", ".."]
+asyncio_mode = "auto"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests (default)",
 ]
-ignore_missing_imports = true
