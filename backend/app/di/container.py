@@ -1,25 +1,154 @@
+"""
+Lazy-initialising Dependency Injection Container.
+
+* No module-level state
+* Every dependency is injected via __init__
+* Services / repos are created on first access (lazy)
+"""
+from __future__ import annotations
+
+from functools import lru_cache
+from typing import TYPE_CHECKING
+
 from app.config import Settings, get_settings
+from app.repositories.document_repo import DocumentRepository
+from app.repositories.node_repo import NodeRepository
+from app.repositories.quiz_repo import QuizRepository
 from app.services.ollama_client import OllamaClient
 from app.services.nlp_pipeline import NLPPipeline
 from app.services.graph_service import GraphBuilder, GraphService
 from app.services.quiz_service import QuizEngine
 
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
 
-class DIContainer:
-    def __init__(self, settings: Settings | None = None):
-        self.settings = settings or get_settings()
-        self.ollama = OllamaClient(
-            base_url=self.settings.OLLAMA_ENDPOINT,
-            api_key=self.settings.OLLAMA_API_KEY,
-            model=self.settings.OLLAMA_MODEL,
-        )
-        self.nlp = NLPPipeline()
-        self.graph_builder = GraphBuilder()
-        self.graph_service = GraphService(self.graph_builder)
-        self.quiz_engine = QuizEngine(self.ollama)
+
+class Container:
+    """Production DI container. No globals, all lazy."""
+
+    def __init__(self, settings: Settings | None = None) -> None:
+        self._settings = settings or get_settings()
+        self._db: Session | None = None  # injected per-request
+        self._ollama: OllamaClient | None = None
+        self._nlp: NLPPipeline | None = None
+        self._graph_builder: GraphBuilder | None = None
+        self._graph_service: GraphService | None = None
+        self._quiz_engine: QuizEngine | None = None
+        self._document_repo: DocumentRepository | None = None
+        self._node_repo: NodeRepository | None = None
+        self._quiz_repo: QuizRepository | None = None
+
+    # ------------------------------------------------------------------
+    # Settings
+    # ------------------------------------------------------------------
+    @property
+    def settings(self) -> Settings:
+        return self._settings
+
     @property
     def db_url(self) -> str:
-        return self.settings.DATABASE_URL
+        return self._settings.DATABASE_URL
+
+    # ------------------------------------------------------------------
+    # Low-level clients (stateless, safe to cache)
+    # ------------------------------------------------------------------
+    @property
+    def ollama_client(self) -> OllamaClient:
+        if self._ollama is None:
+            self._ollama = OllamaClient(
+                base_url=self._settings.OLLAMA_ENDPOINT,
+                api_key=self._settings.OLLAMA_API_KEY,
+                model=self._settings.OLLAMA_MODEL,
+            )
+        return self._ollama
+
+    @property
+    def nlp_pipeline(self) -> NLPPipeline:
+        if self._nlp is None:
+            self._nlp = NLPPipeline()
+        return self._nlp
+
+    @property
+    def graph_builder(self) -> GraphBuilder:
+        if self._graph_builder is None:
+            self._graph_builder = GraphBuilder()
+        return self._graph_builder
+
+    # ------------------------------------------------------------------
+    # Services — injected with repos + clients
+    # ------------------------------------------------------------------
+    @property
+    def graph_service(self) -> GraphService:
+        if self._graph_service is None:
+            self._graph_service = GraphService(
+                repo=self.node_repository,
+                ollama=self.ollama_client,
+                builder=self.graph_builder,
+            )
+        return self._graph_service
+
+    @property
+    def quiz_service(self) -> QuizEngine:
+        if self._quiz_engine is None:
+            self._quiz_engine = QuizEngine(self.ollama_client)
+        return self._quiz_engine
+
+    # ------------------------------------------------------------------
+    # Repositories — take db.Session injected per-request
+    # ------------------------------------------------------------------
+    @property
+    def document_repository(self) -> DocumentRepository:
+        if self._document_repo is None:
+            self._document_repo = DocumentRepository(self._resolve_db())
+        return self._document_repo
+
+    @property
+    def node_repository(self) -> NodeRepository:
+        if self._node_repo is None:
+            self._node_repo = NodeRepository(self._resolve_db())
+        return self._node_repo
+
+    @property
+    def quiz_repository(self) -> QuizRepository:
+        if self._quiz_repo is None:
+            self._quiz_repo = QuizRepository(self._resolve_db())
+        return self._quiz_repo
+
+    # ------------------------------------------------------------------
+    # request-scoped helpers
+    # ------------------------------------------------------------------
+    def _resolve_db(self) -> Session:
+        if self._db is None:
+            raise RuntimeError(
+                "Database session must be bound before accessing repositories. "
+                "Use `container.bind_session(db)` in the request lifecycle."
+            )
+        return self._db
+
+    def bind_session(self, db: Session) -> Container:
+        """Attach a request-scoped DB session (returns self for chaining)."""
+        self._db = db
+        return self
+
+    def release_session(self) -> Container:
+        """Release the current DB session — useful between requests."""
+        self._db = None
+        self._document_repo = None
+        self._node_repo = None
+        self._quiz_repo = None
+        self._graph_service = None
+        self._quiz_engine = None
+        return self
 
 
-container = DIContainer()
+# ------------------------------------------------------------------
+# Application-scoped container factory
+# ------------------------------------------------------------------
+@lru_cache(maxsize=1)
+def _get_cached_settings() -> Settings:
+    return get_settings()
+
+
+def get_container(settings: Settings | None = None) -> Container:
+    """Return a fresh Container (settings reused from cache for speed)."""
+    return Container(settings or _get_cached_settings())
