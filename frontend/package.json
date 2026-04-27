@@ -13,7 +13,8 @@
     "lint": "eslint src/**/*.{ts,vue} --quiet",
     "lint:fix": "eslint src/**/*.{ts,vue} --fix",
     "format": "prettier --check src/**/*.{ts,vue,css,json}",
-    "format:fix": "prettier --write src/**/*.{ts,vue,css,json}"
+    "format:fix": "prettier --write src/**/*.{ts,vue,css,json}",
+    "build:mac": "cd .. && npx electron-builder --mac"
   },
   "dependencies": {
     "vue": "3.4.21",

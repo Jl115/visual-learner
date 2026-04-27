@@ -23,6 +23,10 @@ win:
         - "x64"
 mac:
   category: "public.app-category.education"
+  # ad-hoc code signing removes Gatekeeper warnings on macOS (free, no Apple Developer ID required)
+  codesignIdentity: "-"
+  entitlements: "resources/entitlements.plist"
+  entitlementsInherit: "resources/entitlements.plist"
   target:
     - target: "dmg"
       arch:
