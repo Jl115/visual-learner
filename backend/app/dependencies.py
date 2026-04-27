@@ -20,6 +20,7 @@ from app.database.connection import get_db as _get_db
 from app.di.container import Container, get_container
 from app.repositories.document_repo import DocumentRepository
 from app.repositories.edge_repo import EdgeRepository
+from app.repositories.job_repo import JobRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
 from app.repositories.score_repo import ScoreRepository
@@ -65,6 +66,10 @@ def get_quiz_repo(container: ContainerDep) -> QuizRepository:
 
 def get_score_repo(container: ContainerDep) -> ScoreRepository:
     return container.score_repository
+
+
+def get_job_repo(container: ContainerDep) -> JobRepository:
+    return container.job_repository
 
 
 # ------------------------------------------------------------------

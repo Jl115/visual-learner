@@ -1,15 +1,33 @@
-"""Progress-tracking routes."""
+"""Progress-tracking routes with DB-backed persistence."""
 
 from __future__ import annotations
 
+import logging
+from typing import Optional
+
 from app.dto import DocumentStatusResponse
+from app.dto.documents import DocumentState
 from app.services.state_machine import ProgressTracker
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, HTTPException, Path
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/progress")
 
-# In-memory tracker cache (replace with Redis or DB later)
+# In-memory tracker cache (kept for real-time fast-path; DB is source of truth)
 _trackers: dict[int, ProgressTracker] = {}
+
+# ── Human-readable stage text ─────────────────────────────────────
+_STAGE_LABELS: dict[DocumentState, str] = {
+    DocumentState.UPLOADED: "Uploaded – waiting to start",
+    DocumentState.READING: "Reading PDF",
+    DocumentState.PARSING: "Parsing text",
+    DocumentState.ANALYZING: "Identifying themes",
+    DocumentState.GRAPH_BUILDING: "Building graph",
+    DocumentState.QUIZ_GENERATING: "Generating quizzes",
+    DocumentState.COMPLETED: "Complete!",
+    DocumentState.FAILED: "Failed",
+}
 
 
 def _get_tracker(doc_id: int) -> ProgressTracker:
@@ -17,6 +35,35 @@ def _get_tracker(doc_id: int) -> ProgressTracker:
     if doc_id not in _trackers:
         _trackers[doc_id] = ProgressTracker()
     return _trackers[doc_id]
+
+
+def default_progress_tracker(
+    doc_id: int, to_state: DocumentState, stage_progress: float = 0.0
+) -> ProgressTracker:
+    """Set (or create) a default tracker for a document — used on upload / pipeline events."""
+    tracker = _get_tracker(doc_id)
+    if tracker.current_state != to_state:
+        tracker.advance(to_state, stage_progress=stage_progress)
+    else:
+        tracker.stage_progress = max(0.0, min(1.0, stage_progress))
+    return tracker
+
+
+def get_document_status(doc_id: int) -> dict:
+    """Return a dict suitable for the /documents/{id}/status endpoint."""
+    tracker = _get_tracker(doc_id)
+    state = tracker.current_state
+    return {
+        "document_id": doc_id,
+        "stage": state.value,
+        "stage_label": _STAGE_LABELS.get(state, state.value),
+        "progress": round(tracker.overall_progress * 100, 1),
+        "message": tracker.error_msg or _STAGE_LABELS.get(state, ""),
+        "error": tracker.error_msg,
+    }
+
+
+# ── Route handlers (can also be accessed via /api/v1/progress) ───
 
 
 @router.get("/", summary="List progress entries")
