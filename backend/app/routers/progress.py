@@ -37,7 +37,9 @@ def _get_tracker(doc_id: int) -> ProgressTracker:
     return _trackers[doc_id]
 
 
-def default_progress_tracker(doc_id: int, to_state: DocumentState, stage_progress: float = 0.0) -> ProgressTracker:
+def default_progress_tracker(
+    doc_id: int, to_state: DocumentState, stage_progress: float = 0.0
+) -> ProgressTracker:
     """Set (or create) a default tracker for a document — used on upload / pipeline events."""
     tracker = _get_tracker(doc_id)
     if tracker.current_state != to_state:
@@ -62,6 +64,7 @@ def get_document_status(doc_id: int) -> dict:
 
 
 # ── Route handlers (can also be accessed via /api/v1/progress) ───
+
 
 @router.get("/", summary="List progress entries")
 async def list_progress() -> list[dict[str, int | str]]:

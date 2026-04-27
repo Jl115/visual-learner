@@ -23,7 +23,11 @@ def upgrade() -> None:
         "jobs",
         sa.Column("id", sa.Integer(), primary_key=True, index=True),
         sa.Column(
-            "doc_id", sa.Integer(), sa.ForeignKey("documents.id"), nullable=False, index=True
+            "doc_id",
+            sa.Integer(),
+            sa.ForeignKey("documents.id"),
+            nullable=False,
+            index=True,
         ),
         sa.Column("stage", sa.String(), nullable=False, default="uploaded"),
         sa.Column("progress", sa.Float(), nullable=False, default=0.0),
