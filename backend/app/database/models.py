@@ -4,12 +4,38 @@ from typing import Any, List, Optional
 
 from app.entities.document import Document
 from app.entities.edge import Edge
+from app.entities.job import Job
 from app.entities.node import Node
 from app.entities.quiz import Question, Quiz
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
+
+
+class JobModel(Base):
+    __tablename__ = "jobs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    doc_id = Column(Integer, ForeignKey("documents.id"), nullable=False, index=True)
+    stage = Column(String, nullable=False, default="uploaded")
+    progress = Column(Float, nullable=False, default=0.0)
+    error_msg = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    def to_domain(self) -> Job:
+        return Job(
+            id=self.id,
+            doc_id=self.doc_id,
+            stage=self.stage,
+            progress=self.progress,
+            error_msg=self.error_msg,
+            created_at=self.created_at,
+            updated_at=self.updated_at,
+        )
 
 
 class DocumentModel(Base):

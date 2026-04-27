@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 from app.config import Settings, get_settings
 from app.repositories.document_repo import DocumentRepository
 from app.repositories.edge_repo import EdgeRepository
+from app.repositories.job_repo import JobRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
 from app.repositories.score_repo import ScoreRepository
@@ -41,6 +42,7 @@ class Container:
         self._file_reader: FileReaderService | None = None
         self._document_repo: DocumentRepository | None = None
         self._edge_repo: EdgeRepository | None = None
+        self._job_repo: JobRepository | None = None
         self._node_repo: NodeRepository | None = None
         self._quiz_repo: QuizRepository | None = None
         self._score_repo: ScoreRepository | None = None
@@ -129,6 +131,12 @@ class Container:
         return self._edge_repo
 
     @property
+    def job_repository(self) -> JobRepository:
+        if self._job_repo is None:
+            self._job_repo = JobRepository(self._resolve_db())
+        return self._job_repo
+
+    @property
     def quiz_repository(self) -> QuizRepository:
         if self._quiz_repo is None:
             self._quiz_repo = QuizRepository(self._resolve_db())
@@ -161,6 +169,7 @@ class Container:
         self._db = None
         self._document_repo = None
         self._edge_repo = None
+        self._job_repo = None
         self._node_repo = None
         self._quiz_repo = None
         self._score_repo = None

@@ -7,12 +7,17 @@ export const useUploadStore = defineStore('upload', () => {
   const progress = ref(0) // 0–100
   const error = ref<string | null>(null)
   const fileName = ref('')
+  const docId = ref<string | null>(null)
 
   // ── Getters ────────────────────────────────────
   const isUploading = computed(() => progress.value > 0 && progress.value < 100)
   const hasError = computed(() => error.value !== null)
 
   // ── Actions ─────────────────────────────────────
+
+  const setDocId = (id: string | null) => {
+    docId.value = id
+  }
   const setDragActive = (v: boolean) => {
     dragActive.value = v
   }
@@ -34,6 +39,7 @@ export const useUploadStore = defineStore('upload', () => {
     progress.value = 0
     error.value = null
     fileName.value = ''
+    docId.value = null
   }
 
   return {
@@ -42,6 +48,7 @@ export const useUploadStore = defineStore('upload', () => {
     progress,
     error,
     fileName,
+    docId,
     // getters
     isUploading,
     hasError,
@@ -50,6 +57,7 @@ export const useUploadStore = defineStore('upload', () => {
     setProgress,
     setError,
     setFileName,
+    setDocId,
     reset,
   }
 })

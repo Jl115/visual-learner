@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from app.repositories.document_repo import DocumentRepository
 
 from app.dependencies import get_doc_repo
+from app.routers.progress import get_document_status
 
 router = APIRouter(prefix="/documents")
 
@@ -49,3 +50,9 @@ async def get_document(
         "title": doc.title or "Untitled",
         "status": doc.status,
     }
+
+
+@router.get("/{doc_id}/status", summary="Get document processing status")
+async def document_status(doc_id: str) -> dict:
+    """Return current pipeline status for a document (stage, progress, message, error)."""
+    return get_document_status(int(doc_id))

@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Annotated
 
 from app.dependencies import ContainerDep
-from app.dto.documents import CreateDocumentRequest
+from app.dto.documents import CreateDocumentRequest, DocumentState
+from app.routers.progress import default_progress_tracker
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 logger = logging.getLogger(__name__)
@@ -61,6 +62,12 @@ async def upload_document(
     doc = doc_repo.create(
         CreateDocumentRequest(title=file.filename, file_path=str(file_path))
     )
+
+    # Create initial pipeline job for progress tracking
+    if doc.id is not None:
+        job_repo = container.job_repository
+        job_repo.create(doc_id=doc.id)
+        default_progress_tracker(doc.id, DocumentState.UPLOADED)
 
     logger.info("Document uploaded: id=%s title=%s", doc.id, doc.title)
 
