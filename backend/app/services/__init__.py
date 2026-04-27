@@ -1,11 +1,5 @@
 # Business logic services
 
-from app.services.ollama_client import (
-    OllamaClient,
-    QuizQuestion,
-    Relationship,
-    Theme,
-)
 from app.services.nlp_pipeline import (
     AnalysisResult,
     Chunker,
@@ -14,6 +8,7 @@ from app.services.nlp_pipeline import (
     NLPPipeline,
     NodeResult,
 )
+from app.services.ollama_client import OllamaClient, QuizQuestion, Relationship, Theme
 
 __all__ = [
     "OllamaClient",
