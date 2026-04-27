@@ -22,12 +22,7 @@ from typing import List, Optional, Tuple
 from app.entities.edge import Edge
 from app.entities.node import Node
 from app.entities.quiz import Question, Quiz
-from app.services.ollama_client import (
-    OllamaClient,
-    QuizQuestion,
-    Relationship,
-    Theme,
-)
+from app.services.ollama_client import OllamaClient, QuizQuestion, Relationship, Theme
 
 logger = logging.getLogger(__name__)
 
@@ -134,13 +129,62 @@ class KeywordExtractor:
 
     # A small curated stop-word list (not exhaustive — enough for heuristic)
     STOP_WORDS: set = {
-        "the", "a", "an", "is", "are", "was", "were", "be", "been",
-        "being", "have", "has", "had", "do", "does", "did", "will",
-        "would", "could", "should", "may", "might", "can", "this",
-        "that", "these", "those", "i", "you", "he", "she", "it",
-        "we", "they", "me", "him", "her", "us", "them", "and",
-        "or", "but", "if", "then", "of", "to", "in", "for",
-        "on", "with", "at", "by", "from", "as", "into", "through",
+        "the",
+        "a",
+        "an",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "can",
+        "this",
+        "that",
+        "these",
+        "those",
+        "i",
+        "you",
+        "he",
+        "she",
+        "it",
+        "we",
+        "they",
+        "me",
+        "him",
+        "her",
+        "us",
+        "them",
+        "and",
+        "or",
+        "but",
+        "if",
+        "then",
+        "of",
+        "to",
+        "in",
+        "for",
+        "on",
+        "with",
+        "at",
+        "by",
+        "from",
+        "as",
+        "into",
+        "through",
     }
 
     def extract(self, text: str, max_themes: int = 7) -> List[Theme]:
@@ -266,7 +310,9 @@ class NLPPipeline:
         themes = await self.ollama.extract_themes(analysis_text, max_themes=max_themes)
         used_fallback = False
         if not themes:
-            logger.info(f"LLM theme extraction returned empty; running keyword fallback")
+            logger.info(
+                f"LLM theme extraction returned empty; running keyword fallback"
+            )
             themes = self.fallback.extract(analysis_text, max_themes=max_themes)
             used_fallback = True
 

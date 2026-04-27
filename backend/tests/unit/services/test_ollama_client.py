@@ -19,7 +19,9 @@ from pydantic import ValidationError
 
 @pytest.fixture
 def client() -> OllamaClient:
-    return OllamaClient(base_url="http://fake-ollama:11434", api_key="test-key", model="test-model")
+    return OllamaClient(
+        base_url="http://fake-ollama:11434", api_key="test-key", model="test-model"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -113,7 +115,9 @@ class TestChatCompletion:
                 await client.chat_completion(messages=[])
 
     @pytest.mark.asyncio
-    async def test_chat_completion_with_response_format(self, client: OllamaClient) -> None:
+    async def test_chat_completion_with_response_format(
+        self, client: OllamaClient
+    ) -> None:
         mock_resp = MagicMock()
         mock_resp.json.return_value = {
             "choices": [{"message": {"content": '{"foo":"bar"}'}}],
@@ -157,7 +161,9 @@ class TestExtractThemes:
         mock_resp.raise_for_status = MagicMock()
 
         with patch("httpx.AsyncClient.post", new=AsyncMock(return_value=mock_resp)):
-            themes = await client.extract_themes("Long text about physics...", max_themes=5)
+            themes = await client.extract_themes(
+                "Long text about physics...", max_themes=5
+            )
 
         assert len(themes) == 2
         assert themes[0].label == "Quantum Mechanics"
@@ -165,7 +171,9 @@ class TestExtractThemes:
         assert themes[0].weight == 2.5
 
     @pytest.mark.asyncio
-    async def test_extract_themes_empty_on_malformed_json(self, client: OllamaClient) -> None:
+    async def test_extract_themes_empty_on_malformed_json(
+        self, client: OllamaClient
+    ) -> None:
         mock_resp = MagicMock()
         mock_resp.json.return_value = {
             "choices": [{"message": {"content": "not json"}}],
@@ -178,7 +186,9 @@ class TestExtractThemes:
         assert themes == []
 
     @pytest.mark.asyncio
-    async def test_extract_themes_empty_on_http_error(self, client: OllamaClient) -> None:
+    async def test_extract_themes_empty_on_http_error(
+        self, client: OllamaClient
+    ) -> None:
         mock_resp = MagicMock()
         mock_resp.raise_for_status = MagicMock(
             side_effect=httpx.HTTPStatusError(
@@ -194,10 +204,18 @@ class TestExtractThemes:
         assert themes == []
 
     @pytest.mark.asyncio
-    async def test_extract_themes_empty_on_validation_error(self, client: OllamaClient) -> None:
+    async def test_extract_themes_empty_on_validation_error(
+        self, client: OllamaClient
+    ) -> None:
         mock_resp = MagicMock()
         mock_resp.json.return_value = {
-            "choices": [{"message": {"content": '{"themes":[{"label":"x","summary":"y","weight":-1}]}}'}}],
+            "choices": [
+                {
+                    "message": {
+                        "content": '{"themes":[{"label":"x","summary":"y","weight":-1}]}}'
+                    }
+                }
+            ],
         }
         mock_resp.raise_for_status = MagicMock()
 
@@ -223,7 +241,7 @@ class TestBuildRelationships:
                         "content": (
                             '{"relationships":['
                             '{"source":"A","target":"B","relation_type":"prerequisite-of","strength":0.9}'
-                            ']}'
+                            "]}"
                         )
                     }
                 }
@@ -240,7 +258,9 @@ class TestBuildRelationships:
         assert rels[0].strength == 0.9
 
     @pytest.mark.asyncio
-    async def test_build_relationships_empty_on_short_theme_list(self, client: OllamaClient) -> None:
+    async def test_build_relationships_empty_on_short_theme_list(
+        self, client: OllamaClient
+    ) -> None:
         themes = [Theme(label="A", summary="...")]
         rels = await client.build_relationships(themes, "text")
         assert rels == []
@@ -263,7 +283,7 @@ class TestGenerateQuiz:
                             '{"questions":['
                             '{"text":"Q1","options":[{"text":"Opt A"},{"text":"Opt B"}],'
                             '"correct_index":0,"explanation":"Because A is right"}'
-                            ']}'
+                            "]}"
                         )
                     }
                 }
@@ -273,7 +293,9 @@ class TestGenerateQuiz:
 
         theme = Theme(label="My Theme", summary="Summary")
         with patch("httpx.AsyncClient.post", new=AsyncMock(return_value=mock_resp)):
-            questions = await client.generate_quiz(theme, "Source text", num_questions=1)
+            questions = await client.generate_quiz(
+                theme, "Source text", num_questions=1
+            )
 
         assert len(questions) == 1
         assert questions[0].text == "Q1"
@@ -281,7 +303,9 @@ class TestGenerateQuiz:
         assert questions[0].explanation == "Because A is right"
 
     @pytest.mark.asyncio
-    async def test_generate_quiz_clamps_invalid_correct_index(self, client: OllamaClient) -> None:
+    async def test_generate_quiz_clamps_invalid_correct_index(
+        self, client: OllamaClient
+    ) -> None:
         mock_resp = MagicMock()
         mock_resp.json.return_value = {
             "choices": [
@@ -290,7 +314,7 @@ class TestGenerateQuiz:
                         "content": (
                             '{"questions":['
                             '{"text":"Q","options":[{"text":"A"},{"text":"B"}],"correct_index":5}'
-                            ']}'
+                            "]}"
                         )
                     }
                 }
@@ -343,7 +367,10 @@ class TestHealth:
 
     @pytest.mark.asyncio
     async def test_health_fail_both_endpoints(self, client: OllamaClient) -> None:
-        with patch("httpx.AsyncClient.get", new=AsyncMock(side_effect=httpx.ConnectError("refused"))):
+        with patch(
+            "httpx.AsyncClient.get",
+            new=AsyncMock(side_effect=httpx.ConnectError("refused")),
+        ):
             ok, msg = await client.health()
 
         assert ok is False
@@ -383,9 +410,13 @@ class TestPydanticSchemas:
             Theme(label="X", summary="Y", weight=10.1)
 
     def test_relationship_valid(self) -> None:
-        r = Relationship(source="A", target="B", relation_type="relates-to", strength=0.5)
+        r = Relationship(
+            source="A", target="B", relation_type="relates-to", strength=0.5
+        )
         assert r.strength == 0.5
 
     def test_quiz_question_valid(self) -> None:
-        q = QuizQuestion(text="Q", options=[{"text": "A"}, {"text": "B"}], correct_index=0)
+        q = QuizQuestion(
+            text="Q", options=[{"text": "A"}, {"text": "B"}], correct_index=0
+        )
         assert len(q.options) == 2

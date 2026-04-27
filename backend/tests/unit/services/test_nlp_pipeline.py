@@ -1,5 +1,8 @@
 """Unit tests for app.services.nlp_pipeline."""
 
+from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
+
+import pytest
 from app.services.nlp_pipeline import (
     AnalysisResult,
     Chunker,
@@ -9,9 +12,6 @@ from app.services.nlp_pipeline import (
     NodeResult,
 )
 from app.services.ollama_client import OllamaClient, QuizQuestion, Relationship, Theme
-from unittest.mock import AsyncMock, MagicMock, PropertyMock, patch
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # Chunker
@@ -110,7 +110,9 @@ class TestNLPPipelineConstruction:
         ollama = MagicMock(spec=OllamaClient)
         chunker = Chunker(words_per_chunk=100)
         fallback = KeywordExtractor()
-        pipeline = NLPPipeline(ollama=ollama, chunker=chunker, keyword_extractor=fallback)
+        pipeline = NLPPipeline(
+            ollama=ollama, chunker=chunker, keyword_extractor=fallback
+        )
         assert pipeline.ollama is ollama
         assert pipeline.chunker is chunker
         assert pipeline.fallback is fallback
@@ -135,7 +137,10 @@ class TestAnalyzeDocumentHappyPath:
         ollama.build_relationships = AsyncMock(
             return_value=[
                 Relationship(
-                    source="Theme A", target="Theme B", relation_type="prerequisite-of", strength=0.8
+                    source="Theme A",
+                    target="Theme B",
+                    relation_type="prerequisite-of",
+                    strength=0.8,
                 )
             ]
         )
@@ -152,7 +157,10 @@ class TestAnalyzeDocumentHappyPath:
 
         pipeline = NLPPipeline(ollama=ollama)
         result = await pipeline.analyze_document(
-            doc_id=1, raw_text="Some long text about things.", max_themes=2, questions_per_theme=1
+            doc_id=1,
+            raw_text="Some long text about things.",
+            max_themes=2,
+            questions_per_theme=1,
         )
 
         assert isinstance(result, AnalysisResult)
@@ -237,7 +245,11 @@ class TestInternalHelpers:
     def test_relationships_to_edges(self) -> None:
         pipeline = NLPPipeline(ollama=MagicMock(spec=OllamaClient))
         themes = [Theme(label="A", summary="S"), Theme(label="B", summary="S")]
-        rels = [Relationship(source="A", target="B", relation_type="relates-to", strength=0.5)]
+        rels = [
+            Relationship(
+                source="A", target="B", relation_type="relates-to", strength=0.5
+            )
+        ]
         edges = pipeline._relationships_to_edges(doc_id=1, themes=themes, rels=rels)
         assert len(edges) == 1
         assert edges[0].source_label == "A"
@@ -247,7 +259,11 @@ class TestInternalHelpers:
     def test_relationships_to_edges_ignores_unknown(self) -> None:
         pipeline = NLPPipeline(ollama=MagicMock(spec=OllamaClient))
         themes = [Theme(label="A", summary="S")]
-        rels = [Relationship(source="A", target="Z", relation_type="relates-to", strength=0.5)]
+        rels = [
+            Relationship(
+                source="A", target="Z", relation_type="relates-to", strength=0.5
+            )
+        ]
         edges = pipeline._relationships_to_edges(doc_id=1, themes=themes, rels=rels)
         assert len(edges) == 0  # Z not in themes → dropped
 

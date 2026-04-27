@@ -241,7 +241,12 @@ class OllamaClient:
             parsed = json.loads(raw)
             validated = ExtractThemesResponse.model_validate(parsed)
             return validated.themes
-        except (json.JSONDecodeError, ValidationError, httpx.HTTPError, RuntimeError) as exc:
+        except (
+            json.JSONDecodeError,
+            ValidationError,
+            httpx.HTTPError,
+            RuntimeError,
+        ) as exc:
             logger.warning(f"Theme extraction failed: {exc}")
             return []
 
@@ -268,7 +273,7 @@ class OllamaClient:
             "Reply ONLY with valid JSON conforming to this shape:\n"
             '{"relationships":['
             '{"source":"...","target":"...","relation_type":"...","strength":0.8}'
-            ']}'
+            "]}"
         )
         user_prompt = (
             f"Themes: {theme_labels}\n\n"
@@ -281,7 +286,12 @@ class OllamaClient:
             parsed = json.loads(raw)
             validated = ExtractRelationshipsResponse.model_validate(parsed)
             return validated.relationships
-        except (json.JSONDecodeError, ValidationError, httpx.HTTPError, RuntimeError) as exc:
+        except (
+            json.JSONDecodeError,
+            ValidationError,
+            httpx.HTTPError,
+            RuntimeError,
+        ) as exc:
             logger.warning(f"Relationship extraction failed: {exc}")
             return []
 
@@ -305,7 +315,7 @@ class OllamaClient:
             '{"questions":['
             '{"text":"...","options":[{"text":"..."},{"text":"..."}],'
             '"correct_index":0,"explanation":"..."}'
-            ']}'
+            "]}"
         )
         user_prompt = (
             f"Theme: {theme.label}\n"
@@ -324,7 +334,12 @@ class OllamaClient:
                 if q.options and q.correct_index >= len(q.options):
                     q.correct_index = len(q.options) - 1
             return validated.questions
-        except (json.JSONDecodeError, ValidationError, httpx.HTTPError, RuntimeError) as exc:
+        except (
+            json.JSONDecodeError,
+            ValidationError,
+            httpx.HTTPError,
+            RuntimeError,
+        ) as exc:
             logger.warning(f"Quiz generation failed: {exc}")
             return []
 
