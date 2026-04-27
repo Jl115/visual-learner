@@ -1,6 +1,6 @@
 """Score / persistence service."""
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from app.entities.score import Score
 from app.repositories.score_repo import ScoreRepository

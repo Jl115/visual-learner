@@ -1,10 +1,10 @@
 """Integration smoke test for the full application stack."""
+
 from __future__ import annotations
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture()

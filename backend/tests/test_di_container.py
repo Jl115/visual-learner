@@ -1,12 +1,13 @@
 """Test DI Container with mock repository doubles."""
+
 from __future__ import annotations
 
 import pytest
-from app.di.container import Container, get_container
 from app.config import Settings
+from app.di.container import Container, get_container
 from app.entities.document import Document
 from app.entities.node import Node
-from app.entities.quiz import Quiz, Question
+from app.entities.quiz import Question, Quiz
 
 
 # ------------------------------------------------------------------
@@ -31,7 +32,9 @@ class MockDocumentRepository:
     def list_by_status(self, status: str, limit=50, offset=0) -> list[Document]:
         return []
 
-    def update_status(self, doc_id: int, status: str, error_msg=None) -> Document | None:
+    def update_status(
+        self, doc_id: int, status: str, error_msg=None
+    ) -> Document | None:
         return None
 
     def delete(self, doc_id: int) -> bool:
@@ -115,7 +118,9 @@ class TestDIContainer:
 
         # Simulate a DB session binding (use None for unit test)
         container.bind_session(None)
-        assert container._db is None  # it is None, but logic won't fail now because we override
+        assert (
+            container._db is None
+        )  # it is None, but logic won't fail now because we override
 
         # Directly patch repos for testing
         container._document_repo = MockDocumentRepository()
@@ -138,7 +143,7 @@ class TestDIContainer:
 
 class TestGraphServiceWithMocks:
     def test_graph_service_with_node_repo(self):
-        from app.services.graph_service import GraphService, GraphBuilder
+        from app.services.graph_service import GraphBuilder, GraphService
         from app.services.ollama_client import OllamaClient
 
         # Build bare mock dependencies
@@ -155,7 +160,7 @@ class TestGraphServiceWithMocks:
 
     def test_graph_service_build_graph_returns_nx(self):
         import networkx as nx
-        from app.services.graph_service import GraphService, GraphBuilder
+        from app.services.graph_service import GraphBuilder, GraphService
         from app.services.ollama_client import OllamaClient
 
         service = GraphService(
@@ -164,8 +169,18 @@ class TestGraphServiceWithMocks:
             builder=GraphBuilder(),
         )
         themes = [
-            {"label": "A", "summary": "alpha", "weight": 1.0, "similarities": {"B": 0.8}},
-            {"label": "B", "summary": "beta", "weight": 0.5, "similarities": {"A": 0.8}},
+            {
+                "label": "A",
+                "summary": "alpha",
+                "weight": 1.0,
+                "similarities": {"B": 0.8},
+            },
+            {
+                "label": "B",
+                "summary": "beta",
+                "weight": 0.5,
+                "similarities": {"A": 0.8},
+            },
         ]
         graph = service.build_graph("doc-1", themes)
         assert isinstance(graph, nx.Graph)
@@ -176,8 +191,8 @@ class TestGraphServiceWithMocks:
 
 class TestQuizServiceWithMocks:
     def test_quiz_service_uses_ollama(self):
-        from app.services.quiz_service import QuizEngine
         from app.services.ollama_client import OllamaClient
+        from app.services.quiz_service import QuizEngine
 
         ollama = OllamaClient(base_url="http://test")
         engine = QuizEngine(ollama)

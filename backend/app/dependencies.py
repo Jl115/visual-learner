@@ -11,12 +11,10 @@ Usage in routers:
     def list_docs(repo: DocumentRepository = Depends(get_doc_repo)):
         return repo.list_all()
 """
+
 from __future__ import annotations
 
 from typing import Annotated, Generator
-
-from fastapi import Depends
-from sqlalchemy.orm import Session
 
 from app.database.connection import get_db as _get_db
 from app.di.container import Container, get_container
@@ -25,10 +23,11 @@ from app.repositories.edge_repo import EdgeRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
 from app.repositories.score_repo import ScoreRepository
-from app.services.ollama_client import OllamaClient
 from app.services.graph_service import GraphService
+from app.services.ollama_client import OllamaClient
 from app.services.quiz_service import QuizEngine
-
+from fastapi import Depends
+from sqlalchemy.orm import Session
 
 # ------------------------------------------------------------------
 # DB session for FastAPI Depends()

@@ -1,24 +1,25 @@
 """Tests for entity dataclasses and OOP repositories."""
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
 from app.database.models import Base
 from app.dto.documents import CreateDocumentRequest
 from app.entities.document import Document
-from app.entities.node import Node
 from app.entities.edge import Edge
-from app.entities.quiz import Quiz, Question
+from app.entities.node import Node
+from app.entities.quiz import Question, Quiz
 from app.repositories.document_repo import DocumentRepository
-from app.repositories.node_repo import NodeRepository
 from app.repositories.edge_repo import EdgeRepository
+from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 
 @pytest.fixture
 def db():
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite:///:memory:", connect_args={"check_same_thread": False}
+    )
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(bind=engine)
     session = SessionLocal()
@@ -52,6 +53,7 @@ def quiz_repo(db: Session):
 class TestDocumentRepository:
     def test_create_and_get(self, doc_repo):
         from app.entities.document import Document
+
         doc = Document(title="Test Doc", source_path="/tmp/test.pdf")
         created = doc_repo.create_from_entity(doc)
         assert created.id is not None
@@ -82,7 +84,9 @@ class TestDocumentRepository:
 
     def test_list_all(self, doc_repo):
         for i in range(3):
-            doc_repo.create(CreateDocumentRequest(title=f"Doc{i}", file_path=f"/tmp/{i}.pdf"))
+            doc_repo.create(
+                CreateDocumentRequest(title=f"Doc{i}", file_path=f"/tmp/{i}.pdf")
+            )
         docs = doc_repo.list_all(limit=10)
         assert len(docs) == 3
 
@@ -118,7 +122,9 @@ class TestNodeRepository:
 
 class TestEdgeRepository:
     def test_create_and_get(self, edge_repo):
-        edge = Edge(source_node_id=1, target_node_id=2, doc_id=1, relation_type="relates_to")
+        edge = Edge(
+            source_node_id=1, target_node_id=2, doc_id=1, relation_type="relates_to"
+        )
         created = edge_repo.create(edge)
         assert created.id is not None
         assert created.relation_type == "relates_to"
@@ -148,9 +154,13 @@ class TestEdgeRepository:
 
 class TestQuizRepository:
     def test_create_and_get(self, quiz_repo):
-        quiz = Quiz(doc_id=1, total_questions=1, questions=[
-            Question(text="Q1", options=["A", "B"], correct_index=0),
-        ])
+        quiz = Quiz(
+            doc_id=1,
+            total_questions=1,
+            questions=[
+                Question(text="Q1", options=["A", "B"], correct_index=0),
+            ],
+        )
         created = quiz_repo.create(quiz)
         assert created.id is not None
         assert created.total_questions == 1

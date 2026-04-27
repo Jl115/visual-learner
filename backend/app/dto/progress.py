@@ -1,13 +1,15 @@
 """Progress DTOs."""
+
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field
 
 from app.dto.documents import DocumentState
+from pydantic import BaseModel, Field
 
 
 class ProgressResponse(BaseModel):
     """Response shape for document processing progress."""
+
     document_id: int
     stage: str
     progress: float
@@ -18,6 +20,7 @@ class ProgressResponse(BaseModel):
 
 class DocumentStatusResponse(BaseModel):
     """Full document status with state-machine info."""
+
     document_id: int
     state: DocumentState
     stage_progress: float = Field(0.0, ge=0.0, le=1.0)

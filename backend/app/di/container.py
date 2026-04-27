@@ -5,6 +5,7 @@ Lazy-initialising Dependency Injection Container.
 * Every dependency is injected via __init__
 * Services / repos are created on first access (lazy)
 """
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -16,9 +17,9 @@ from app.repositories.edge_repo import EdgeRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
 from app.repositories.score_repo import ScoreRepository
-from app.services.ollama_client import OllamaClient
-from app.services.nlp_pipeline import NLPPipeline
 from app.services.graph_service import GraphBuilder, GraphService
+from app.services.nlp_pipeline import NLPPipeline
+from app.services.ollama_client import OllamaClient
 from app.services.quiz_service import QuizEngine
 
 if TYPE_CHECKING:

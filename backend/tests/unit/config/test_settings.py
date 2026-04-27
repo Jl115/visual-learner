@@ -76,6 +76,7 @@ class TestGetSettingsCached:
 class TestSettingsConfigureLogging:
     def test_configure_logging(self):
         import logging
+
         from app.config.settings import Settings
 
         root = logging.getLogger()

@@ -1,0 +1,46 @@
+/**
+ * CSS Custom Properties — runtime mirror of DESIGN.md tokens.
+ * Keep in sync with root DESIGN.md; values are derived from the token spec.
+ * Categories: colors, typography, layout (spacing/radii).
+ */
+
+:root {
+  /* ── Colors ── */
+  --color-brand: #4ECDC4;            /* {colors.brand} */
+  --color-brand-hover: #95E1D3;      /* {colors.brandHover} */
+  --color-accent: #FF6B6B;            /* {colors.accent} */
+  --color-accent-hover: #FFB6C1;      /* {colors.accentHover} */
+  --color-bg: #0f1116;                /* {colors.bg} */
+  --color-bg-secondary: #1a1c23;      /* {colors.bgSecondary} */
+  --color-surface: #232530;            /* {colors.surface} */
+  --color-text: #f0f0f0;              /* {colors.text} */
+  --color-text-muted: #a0a0a0;        /* {colors.textMuted} */
+  --color-text-inverse: #0f1116;      /* {colors.textInverse} */
+  --color-success: #95E1D3;            /* {colors.success} */
+  --color-warn: #FFE66D;              /* {colors.warn} */
+  --color-error: #FF6B6B;              /* {colors.error} */
+  --color-lavender: #DDA0DD;          /* {colors.lavender} */
+  --color-yellow: #FFE66D;            /* {colors.yellow} */
+  --color-peach: #FFDAB9;              /* {colors.peach} */
+  --color-sky: #87CEEB;                /* {colors.sky} */
+  --color-rose: #FFB6C1;              /* {colors.rose} */
+  --color-sage: #9CAF88;              /* {colors.sage} */
+  --color-slate: #B0C4DE;              /* {colors.slate} */
+
+  /* ── Typography ── */
+  --font-sans: "Inter", system-ui, sans-serif;            /* {typography.h1.fontFamily} */
+  --font-mono: "JetBrains Mono", monospace;                /* {typography.label.fontFamily} */
+
+  /* ── Spacing ── */
+  --space-xs: 4px;    /* {spacing.xs} */
+  --space-sm: 8px;    /* {spacing.sm} */
+  --space-md: 16px;   /* {spacing.md} */
+  --space-lg: 24px;   /* {spacing.lg} */
+  --space-xl: 32px;   /* {spacing.xl} */
+
+  /* ── Radius ── */
+  --radius-sm: 4px;   /* {rounded.sm} */
+  --radius-md: 8px;   /* {rounded.md} */
+  --radius-lg: 16px;  /* {rounded.lg} */
+  --radius-xl: 24px;  /* {rounded.xl} */
+}

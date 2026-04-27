@@ -2,11 +2,11 @@
 
 import json
 from typing import List, Optional
-from sqlalchemy.orm import Session
 
 from app.database.models import QuizModel, QuizQuestionModel
-from app.entities.quiz import Quiz, Question
+from app.entities.quiz import Question, Quiz
 from app.repositories.base_repository import BaseRepository
+from sqlalchemy.orm import Session
 
 
 class QuizRepository(BaseRepository):
@@ -54,7 +54,9 @@ class QuizRepository(BaseRepository):
         model = self._db.query(QuizModel).filter_by(id=quiz_id).first()
         return self._to_domain(model) if model else None
 
-    def list_by_document(self, doc_id: int, limit: int = 50, offset: int = 0) -> List[Quiz]:
+    def list_by_document(
+        self, doc_id: int, limit: int = 50, offset: int = 0
+    ) -> List[Quiz]:
         rows = (
             self._db.query(QuizModel)
             .filter_by(doc_id=doc_id)
