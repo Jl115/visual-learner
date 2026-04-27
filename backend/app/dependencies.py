@@ -26,6 +26,7 @@ from app.repositories.score_repo import ScoreRepository
 from app.services.graph_service import GraphService
 from app.services.ollama_client import OllamaClient
 from app.services.quiz_service import QuizEngine
+from app.services.file_reader_service import FileReaderService
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
@@ -79,3 +80,7 @@ def get_quiz_service(container: ContainerDep) -> QuizEngine:
 
 def get_ollama_client(container: ContainerDep) -> OllamaClient:
     return container.ollama_client
+
+
+def get_file_reader_service(container: ContainerDep) -> FileReaderService:
+    return container.file_reader_service

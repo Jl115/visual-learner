@@ -21,6 +21,7 @@ from app.services.graph_service import GraphBuilder, GraphService
 from app.services.nlp_pipeline import NLPPipeline
 from app.services.ollama_client import OllamaClient
 from app.services.quiz_service import QuizEngine
+from app.services.file_reader_service import FileReaderService
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
@@ -37,6 +38,7 @@ class Container:
         self._graph_builder: GraphBuilder | None = None
         self._graph_service: GraphService | None = None
         self._quiz_engine: QuizEngine | None = None
+        self._file_reader: FileReaderService | None = None
         self._document_repo: DocumentRepository | None = None
         self._edge_repo: EdgeRepository | None = None
         self._node_repo: NodeRepository | None = None
@@ -99,6 +101,12 @@ class Container:
             self._quiz_engine = QuizEngine(self.ollama_client)
         return self._quiz_engine
 
+    @property
+    def file_reader_service(self) -> FileReaderService:
+        if self._file_reader is None:
+            self._file_reader = FileReaderService()
+        return self._file_reader
+
     # ------------------------------------------------------------------
     # Repositories — take db.Session injected per-request
     # ------------------------------------------------------------------
@@ -158,6 +166,7 @@ class Container:
         self._score_repo = None
         self._graph_service = None
         self._quiz_engine = None
+        self._file_reader = None
         return self
 
 
