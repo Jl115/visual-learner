@@ -1,14 +1,13 @@
 from typing import Dict, List, Optional
 
 import networkx as nx
+from app.dto.graphs import GraphEdgeResponse, GraphNodeResponse, GraphResponse
 from app.entities.edge import Edge
 from app.entities.node import Node
-from app.repositories.node_repo import NodeRepository
 from app.repositories.edge_repo import EdgeRepository
+from app.repositories.node_repo import NodeRepository
 from app.services.nlp_pipeline import NLPPipeline
 from app.services.ollama_client import OllamaClient
-
-from app.dto.graphs import GraphResponse, GraphNodeResponse, GraphEdgeResponse
 
 
 class GraphBuilder:
@@ -83,15 +82,17 @@ class GraphService:
 
         node_responses: List[GraphNodeResponse] = []
         for n in nodes:
-            node_responses.append(GraphNodeResponse(
-                id=n.id or -1,
-                label=n.label,
-                title=n.summary,
-                value=n.weight if n.weight is not None else 5.0,
-                color=n.color,
-                group=n.theme_category,
-                font={"color": "#f0f0f0", "face": "Inter, system-ui, sans-serif"},
-            ))
+            node_responses.append(
+                GraphNodeResponse(
+                    id=n.id or -1,
+                    label=n.label,
+                    title=n.summary,
+                    value=n.weight if n.weight is not None else 5.0,
+                    color=n.color,
+                    group=n.theme_category,
+                    font={"color": "#f0f0f0", "face": "Inter, system-ui, sans-serif"},
+                )
+            )
 
         edge_responses: List[GraphEdgeResponse] = []
         for e in edges:
@@ -101,14 +102,16 @@ class GraphService:
             if src_node:
                 source_color = src_node.color
 
-            edge_responses.append(GraphEdgeResponse(
-                id=e.id or -1,
-                source=e.source_node_id,
-                target=e.target_node_id,
-                width=e.strength if e.strength is not None else 1.0,
-                color=source_color,
-                arrows="to",
-            ))
+            edge_responses.append(
+                GraphEdgeResponse(
+                    id=e.id or -1,
+                    source=e.source_node_id,
+                    target=e.target_node_id,
+                    width=e.strength if e.strength is not None else 1.0,
+                    color=source_color,
+                    arrows="to",
+                )
+            )
 
         return GraphResponse(
             document_id=doc_id,
