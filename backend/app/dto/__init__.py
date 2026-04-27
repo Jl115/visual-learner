@@ -2,7 +2,7 @@
 
 from app.dto.documents import CreateDocumentRequest, DocumentResponse, DocumentState
 from app.dto.edges import EdgeResponse
-from app.dto.graphs import GraphResponse, GraphNodeResponse, GraphEdgeResponse
+from app.dto.graphs import GraphEdgeResponse, GraphNodeResponse, GraphResponse
 from app.dto.nodes import CreateNodeRequest, NodeResponse
 from app.dto.progress import DocumentStatusResponse, ProgressResponse
 from app.dto.quizzes import Question, QuizAnswerRequest, QuizResponse, QuizResult

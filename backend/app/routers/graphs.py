@@ -11,7 +11,6 @@ if TYPE_CHECKING:
     from app.services.graph_service import GraphService
 
 from app.dependencies import get_graph_service
-
 from app.dto.graphs import GraphResponse
 
 router = APIRouter(prefix="/graphs")
@@ -31,5 +30,8 @@ async def get_graph(
 ) -> GraphResponse:
     graph = service.get_document_graph(doc_id)
     if graph is None:
-        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Graph for document {doc_id} not found")
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND,
+            detail=f"Graph for document {doc_id} not found",
+        )
     return graph
