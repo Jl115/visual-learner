@@ -1,6 +1,9 @@
 import { ipcRenderer } from 'electron'
 
-export async function ipcInvoke<T = unknown>(channel: string, ...args: unknown[]): Promise<T> {
+export async function ipcInvoke<T = unknown>(
+  channel: string,
+  ...args: unknown[]
+): Promise<T> {
   return ipcRenderer.invoke(channel, ...args)
 }
 

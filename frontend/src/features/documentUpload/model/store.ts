@@ -4,7 +4,7 @@ import { ref, computed } from 'vue'
 export const useUploadStore = defineStore('upload', () => {
   // ── State ──────────────────────────────────────
   const dragActive = ref(false)
-  const progress = ref(0)          // 0–100
+  const progress = ref(0) // 0–100
   const error = ref<string | null>(null)
   const fileName = ref('')
 

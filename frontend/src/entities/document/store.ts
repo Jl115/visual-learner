@@ -22,7 +22,9 @@ export const useDocumentStore = defineStore('documents', () => {
   // ── Getters ────────────────────────────────────
   const all = computed(() => items.value)
   const count = computed(() => items.value.length)
-  const active = computed(() => items.value.find((d) => d.id === activeId.value) ?? null)
+  const active = computed(
+    () => items.value.find((d) => d.id === activeId.value) ?? null
+  )
 
   // ── Actions ─────────────────────────────────────
   const setAll = (docs: Document[]) => {

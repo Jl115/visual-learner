@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2 w-full">
+  <div class="flex w-full flex-col gap-2">
     <!-- Status badge -->
     <div class="flex items-center gap-3">
       <span
@@ -14,13 +14,13 @@
         />
         {{ meta.label }}
       </span>
-      <span class="text-xs text-text-muted">
+      <span class="text-text-muted text-xs">
         {{ Math.round(displayProgress * 100) }}%
       </span>
     </div>
 
     <!-- Progress bar -->
-    <div class="h-2 w-full overflow-hidden rounded-full bg-surface">
+    <div class="bg-surface h-2 w-full overflow-hidden rounded-full">
       <div
         class="h-full rounded-full transition-all duration-300 ease-out"
         :class="barColorClass"
@@ -29,7 +29,7 @@
     </div>
 
     <!-- Error message -->
-    <p v-if="errorMsg" class="text-xs text-accent-coral">
+    <p v-if="errorMsg" class="text-accent-coral text-xs">
       {{ errorMsg }}
     </p>
   </div>
@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+
 import { DocumentState, getStateMeta } from '../lib/types'
 
 interface Props {

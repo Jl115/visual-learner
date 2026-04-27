@@ -4,7 +4,7 @@
       'inline-flex items-center justify-center rounded-lg px-4 py-2 font-sans text-sm font-medium transition-colors duration-200',
       variantClasses[variant],
       sizeClasses[size],
-      { 'opacity-50 cursor-not-allowed': disabled },
+      { 'cursor-not-allowed opacity-50': disabled },
     ]"
     :disabled="disabled"
   >
@@ -22,7 +22,11 @@ interface Props {
   disabled?: boolean
 }
 
-const { variant = 'primary', size = 'md', disabled = false } = defineProps<Props>()
+const {
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+} = defineProps<Props>()
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-teal text-bg-primary hover:bg-mint',
