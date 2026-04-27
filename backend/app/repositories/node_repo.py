@@ -1,11 +1,11 @@
 """Node repository — full CRUD."""
 
 from typing import List, Optional
-from sqlalchemy.orm import Session
 
 from app.database.models import NodeModel
 from app.entities.node import Node
 from app.repositories.base_repository import BaseRepository
+from sqlalchemy.orm import Session
 
 
 class NodeRepository(BaseRepository):
@@ -48,7 +48,9 @@ class NodeRepository(BaseRepository):
         model = self._db.query(NodeModel).filter_by(id=node_id).first()
         return self._to_domain(model) if model else None
 
-    def list_by_document(self, doc_id: int, limit: int = 200, offset: int = 0) -> List[Node]:
+    def list_by_document(
+        self, doc_id: int, limit: int = 200, offset: int = 0
+    ) -> List[Node]:
         rows = (
             self._db.query(NodeModel)
             .filter_by(doc_id=doc_id)

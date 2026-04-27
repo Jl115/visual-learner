@@ -5,11 +5,11 @@ Revises:
 Create Date: 2026-04-26
 
 """
+
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "001_init"
@@ -24,13 +24,22 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), primary_key=True, index=True),
         sa.Column("title", sa.String(), nullable=False),
         sa.Column("path", sa.String(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), onupdate=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now()
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.func.now(),
+            onupdate=sa.func.now(),
+        ),
     )
     op.create_table(
         "nodes",
         sa.Column("id", sa.Integer(), primary_key=True, index=True),
-        sa.Column("doc_id", sa.Integer(), sa.ForeignKey("documents.id"), nullable=False),
+        sa.Column(
+            "doc_id", sa.Integer(), sa.ForeignKey("documents.id"), nullable=False
+        ),
         sa.Column("label", sa.String(), nullable=False),
         sa.Column("summary", sa.Text(), nullable=True),
         sa.Column("position_x", sa.Float(), nullable=True),
@@ -40,15 +49,25 @@ def upgrade() -> None:
     op.create_table(
         "edges",
         sa.Column("id", sa.Integer(), primary_key=True, index=True),
-        sa.Column("source_node_id", sa.Integer(), sa.ForeignKey("nodes.id"), nullable=False),
-        sa.Column("target_node_id", sa.Integer(), sa.ForeignKey("nodes.id"), nullable=False),
-        sa.Column("doc_id", sa.Integer(), sa.ForeignKey("documents.id"), nullable=False),
+        sa.Column(
+            "source_node_id", sa.Integer(), sa.ForeignKey("nodes.id"), nullable=False
+        ),
+        sa.Column(
+            "target_node_id", sa.Integer(), sa.ForeignKey("nodes.id"), nullable=False
+        ),
+        sa.Column(
+            "doc_id", sa.Integer(), sa.ForeignKey("documents.id"), nullable=False
+        ),
     )
     op.create_table(
         "quizzes",
         sa.Column("id", sa.Integer(), primary_key=True, index=True),
-        sa.Column("doc_id", sa.Integer(), sa.ForeignKey("documents.id"), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
+        sa.Column(
+            "doc_id", sa.Integer(), sa.ForeignKey("documents.id"), nullable=False
+        ),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now()
+        ),
     )
     op.create_table(
         "quiz_questions",

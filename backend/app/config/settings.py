@@ -7,6 +7,7 @@ Priority (highest → lowest):
   2. .env file in project root (autodetected by pydantic-settings)
   3. Default values defined here
 """
+
 from __future__ import annotations
 
 import logging
@@ -28,9 +29,15 @@ class Settings(BaseSettings):
     """Application settings singleton."""
 
     # --- Ollama -----------------------------------------------------------
-    OLLAMA_ENDPOINT: str = Field(default="https://ollama.com/v1", description="Ollama API endpoint URL")
-    OLLAMA_API_KEY: str = Field(default="", description="Ollama API key (if required by proxy)")
-    OLLAMA_MODEL: str = Field(default="llama3.1", description="Default model for generation tasks")
+    OLLAMA_ENDPOINT: str = Field(
+        default="https://ollama.com/v1", description="Ollama API endpoint URL"
+    )
+    OLLAMA_API_KEY: str = Field(
+        default="", description="Ollama API key (if required by proxy)"
+    )
+    OLLAMA_MODEL: str = Field(
+        default="llama3.1", description="Default model for generation tasks"
+    )
 
     # --- Database -----------------------------------------------------------
     DATABASE_URL: str = Field(
@@ -44,8 +51,12 @@ class Settings(BaseSettings):
 
     # --- Frontend overrides (via .env if needed) ----------------------------
     # VITE_* are read here only for backend awareness; Vite reads them directly.
-    VITE_API_BASE_URL: str = Field(default="http://localhost:8000", description="Frontend API base URL")
-    VITE_APP_VERSION: str = Field(default="0.1.0", description="Frontend version string")
+    VITE_API_BASE_URL: str = Field(
+        default="http://localhost:8000", description="Frontend API base URL"
+    )
+    VITE_APP_VERSION: str = Field(
+        default="0.1.0", description="Frontend version string"
+    )
 
     model_config = SettingsConfigDict(
         env_file=_PROJECT_ROOT / ".env",

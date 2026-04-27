@@ -1,10 +1,11 @@
 from typing import Dict, List
+
 import networkx as nx
-from app.entities.node import Node
 from app.entities.edge import Edge
+from app.entities.node import Node
 from app.repositories.node_repo import NodeRepository
-from app.services.ollama_client import OllamaClient
 from app.services.nlp_pipeline import NLPPipeline
+from app.services.ollama_client import OllamaClient
 
 
 class GraphBuilder:

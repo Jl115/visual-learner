@@ -1,11 +1,11 @@
 """Edge repository — full CRUD."""
 
 from typing import List, Optional
-from sqlalchemy.orm import Session
 
 from app.database.models import EdgeModel
 from app.entities.edge import Edge
 from app.repositories.base_repository import BaseRepository
+from sqlalchemy.orm import Session
 
 
 class EdgeRepository(BaseRepository):
@@ -40,7 +40,9 @@ class EdgeRepository(BaseRepository):
         model = self._db.query(EdgeModel).filter_by(id=edge_id).first()
         return self._to_domain(model) if model else None
 
-    def list_by_document(self, doc_id: int, limit: int = 500, offset: int = 0) -> List[Edge]:
+    def list_by_document(
+        self, doc_id: int, limit: int = 500, offset: int = 0
+    ) -> List[Edge]:
         rows = (
             self._db.query(EdgeModel)
             .filter_by(doc_id=doc_id)

@@ -1,6 +1,7 @@
 """Base repository with generic CRUD using SQLAlchemy."""
 
 from typing import Generic, List, Optional, TypeVar
+
 from sqlalchemy.orm import Session
 
 Domain = TypeVar("Domain")

@@ -1,10 +1,10 @@
 """Progress-tracking routes."""
-from __future__ import annotations
 
-from fastapi import APIRouter, Path
+from __future__ import annotations
 
 from app.dto import DocumentStatusResponse
 from app.services.state_machine import ProgressTracker
+from fastapi import APIRouter, Path
 
 router = APIRouter(prefix="/progress")
 

@@ -1,4 +1,5 @@
 """Knowledge-graph routes (Phase 2) using DI container."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

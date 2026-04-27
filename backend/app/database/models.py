@@ -1,23 +1,13 @@
+import json
 from datetime import datetime
 from typing import Any, List, Optional
-import json
-
-from sqlalchemy import (
-    Column,
-    DateTime,
-    Float,
-    ForeignKey,
-    Integer,
-    String,
-    Text,
-    func,
-)
-from sqlalchemy.orm import declarative_base, relationship
 
 from app.entities.document import Document
-from app.entities.node import Node
 from app.entities.edge import Edge
-from app.entities.quiz import Quiz, Question
+from app.entities.node import Node
+from app.entities.quiz import Question, Quiz
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
@@ -34,13 +24,23 @@ class DocumentModel(Base):
     status = Column(String, nullable=False, default="pending")
     error_msg = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
-    nodes = relationship("NodeModel", back_populates="document", cascade="all, delete-orphan")
-    edges = relationship("EdgeModel", back_populates="document", cascade="all, delete-orphan")
-    quizzes = relationship("QuizModel", back_populates="document", cascade="all, delete-orphan")
+    nodes = relationship(
+        "NodeModel", back_populates="document", cascade="all, delete-orphan"
+    )
+    edges = relationship(
+        "EdgeModel", back_populates="document", cascade="all, delete-orphan"
+    )
+    quizzes = relationship(
+        "QuizModel", back_populates="document", cascade="all, delete-orphan"
+    )
     # --- NEW relationship ---
-    scores = relationship("ScoreModel", back_populates="document", cascade="all, delete-orphan")
+    scores = relationship(
+        "ScoreModel", back_populates="document", cascade="all, delete-orphan"
+    )
 
     def to_domain(self) -> Document:
         return Document(
@@ -132,9 +132,13 @@ class QuizModel(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     document = relationship("DocumentModel", back_populates="quizzes")
-    questions = relationship("QuizQuestionModel", back_populates="quiz", cascade="all, delete-orphan")
+    questions = relationship(
+        "QuizQuestionModel", back_populates="quiz", cascade="all, delete-orphan"
+    )
     # --- NEW relationship ---
-    attempts = relationship("QuizAttemptModel", back_populates="quiz", cascade="all, delete-orphan")
+    attempts = relationship(
+        "QuizAttemptModel", back_populates="quiz", cascade="all, delete-orphan"
+    )
 
     def to_domain(self) -> Quiz:
         return Quiz(
@@ -172,6 +176,7 @@ class QuizQuestionModel(Base):
 
 
 # ============================ NEW MODELS #76 ============================
+
 
 class QuizAttemptModel(Base):
     __tablename__ = "quiz_attempts"

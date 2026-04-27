@@ -1,11 +1,18 @@
+from app.database.connection import TEST_DB_URL, DatabaseConnection
+from app.database.models import (
+    DocumentModel,
+    EdgeModel,
+    NodeModel,
+    QuizModel,
+    QuizQuestionModel,
+)
 from sqlalchemy.orm import Session
-from app.database.models import DocumentModel, NodeModel, EdgeModel, QuizModel, QuizQuestionModel
-from app.database.connection import DatabaseConnection, TEST_DB_URL
 
 
 def test_document_model_basic():
     conn = DatabaseConnection(TEST_DB_URL)
     from app.database.models import Base
+
     conn.create_tables(Base)
     session = next(conn.get_session())
     doc = DocumentModel(title="Hello", path="/tmp/test.pdf")

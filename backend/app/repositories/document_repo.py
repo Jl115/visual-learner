@@ -1,12 +1,12 @@
 """Document repository — full CRUD."""
 
 from typing import List, Optional
-from sqlalchemy.orm import Session
 
 from app.database.models import DocumentModel
 from app.dto.documents import CreateDocumentRequest
 from app.entities.document import Document
 from app.repositories.base_repository import BaseRepository
+from sqlalchemy.orm import Session
 
 
 class DocumentRepository(BaseRepository):
@@ -57,7 +57,9 @@ class DocumentRepository(BaseRepository):
         )
         return [self._to_domain(r) for r in rows]
 
-    def list_by_status(self, status: str, limit: int = 50, offset: int = 0) -> List[Document]:
+    def list_by_status(
+        self, status: str, limit: int = 50, offset: int = 0
+    ) -> List[Document]:
         rows = (
             self._db.query(DocumentModel)
             .filter_by(status=status)
@@ -82,7 +84,9 @@ class DocumentRepository(BaseRepository):
     def create_from_entity(self, domain: Document) -> Document:
         return super().create(domain)
 
-    def update_status(self, doc_id: int, status: str, error_msg: str | None = None) -> Optional[Document]:
+    def update_status(
+        self, doc_id: int, status: str, error_msg: str | None = None
+    ) -> Optional[Document]:
         model = self._db.query(DocumentModel).filter_by(id=doc_id).first()
         if not model:
             return None

@@ -1,12 +1,15 @@
 """Document DTOs."""
+
 from datetime import datetime
 from enum import StrEnum
 from typing import Optional
+
 from pydantic import BaseModel, Field, field_validator
 
 
 class DocumentState(StrEnum):
     """Document lifecycle states."""
+
     UPLOADED = "uploaded"
     READING = "reading"
     PARSING = "parsing"
@@ -19,6 +22,7 @@ class DocumentState(StrEnum):
 
 class CreateDocumentRequest(BaseModel):
     """Request body for creating a new document."""
+
     title: str = Field(..., min_length=1, max_length=500)
     file_path: str = Field(..., min_length=1)
 
@@ -34,6 +38,7 @@ class CreateDocumentRequest(BaseModel):
 
 class DocumentResponse(BaseModel):
     """Response shape for a document."""
+
     id: int
     title: str
     status: str = "pending"
