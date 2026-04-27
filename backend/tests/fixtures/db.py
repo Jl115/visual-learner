@@ -1,10 +1,10 @@
 from typing import Generator
+
 import pytest
+from app.database.connection import DatabaseConnection
+from app.database.models import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-
-from app.database.models import Base
-from app.database.connection import DatabaseConnection
 
 
 @pytest.fixture(scope="function")
@@ -13,7 +13,9 @@ def db_session() -> Generator[Session, None, None]:
 
     Tables are created before each test and dropped after.
     """
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite:///:memory:", connect_args={"check_same_thread": False}
+    )
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(bind=engine)
     session: Session = TestingSessionLocal()

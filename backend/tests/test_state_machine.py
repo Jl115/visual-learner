@@ -1,6 +1,6 @@
 """Tests for the document state-machine and ProgressTracker."""
-import pytest
 
+import pytest
 from app.dto.documents import DocumentState
 from app.services.state_machine import (
     ProgressTracker,
@@ -43,12 +43,8 @@ class TestStateTransitions:
 
     def test_invalid_transitions__skip_ahead(self) -> None:
         """Skipping states is illegal."""
-        assert not is_valid_transition(
-            DocumentState.UPLOADED, DocumentState.ANALYZING
-        )
-        assert not is_valid_transition(
-            DocumentState.PARSING, DocumentState.COMPLETED
-        )
+        assert not is_valid_transition(DocumentState.UPLOADED, DocumentState.ANALYZING)
+        assert not is_valid_transition(DocumentState.PARSING, DocumentState.COMPLETED)
 
     def test_get_next_states(self) -> None:
         """Expected next-state sets."""
@@ -215,7 +211,9 @@ class TestCallbacks:
     def test_callback_receives_state_and_progress(self) -> None:
         calls = []
 
-        def on_transition(_from: DocumentState, to: DocumentState, overall: float) -> None:
+        def on_transition(
+            _from: DocumentState, to: DocumentState, overall: float
+        ) -> None:
             calls.append((to, overall))
 
         tracker = ProgressTracker()

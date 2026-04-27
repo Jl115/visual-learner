@@ -1,12 +1,12 @@
 """Score / quiz result repository."""
 
-from typing import List, Optional, Dict, Any
-from sqlalchemy.orm import Session
-from sqlalchemy import func
+from typing import Any, Dict, List, Optional
 
 from app.database.models import ScoreModel
 from app.entities.score import Score
 from app.repositories.base_repository import BaseRepository
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 
 class ScoreRepository(BaseRepository):
@@ -31,7 +31,9 @@ class ScoreRepository(BaseRepository):
         model = self._db.query(ScoreModel).filter_by(id=score_id).first()
         return self._to_domain(model) if model else None
 
-    def list_by_document(self, doc_id: int, limit: int = 50, offset: int = 0) -> List[Score]:
+    def list_by_document(
+        self, doc_id: int, limit: int = 50, offset: int = 0
+    ) -> List[Score]:
         rows = (
             self._db.query(ScoreModel)
             .filter_by(document_id=doc_id)
@@ -101,12 +103,15 @@ class ScoreRepository(BaseRepository):
             "total_correct": int(total_correct),
             "total_possible": int(total_possible),
             "attempt_count": int(attempt_count),
-            "accuracy": round(total_correct / total_possible, 4) if total_possible else 0.0,
+            "accuracy": (
+                round(total_correct / total_possible, 4) if total_possible else 0.0
+            ),
         }
 
     def get_all_document_stats(self) -> List[Dict[str, Any]]:
         """Aggregated stats for every document that has scores."""
         from app.database.models import DocumentModel
+
         rows = (
             self._db.query(
                 DocumentModel.id.label("doc_id"),
@@ -125,20 +130,29 @@ class ScoreRepository(BaseRepository):
         for r in rows:
             total_correct = r.total_correct or 0
             total_possible = r.total_possible or 1
-            results.append({
-                "doc_id": r.doc_id,
-                "doc_title": r.doc_title,
-                "total_correct": int(total_correct),
-                "total_possible": int(r.total_possible or 0),
-                "attempt_count": int(r.attempt_count or 0),
-                "accuracy": round(total_correct / total_possible, 4) if total_possible else 0.0,
-                "last_attempt": r.last_attempt.isoformat() if r.last_attempt else None,
-            })
+            results.append(
+                {
+                    "doc_id": r.doc_id,
+                    "doc_title": r.doc_title,
+                    "total_correct": int(total_correct),
+                    "total_possible": int(r.total_possible or 0),
+                    "attempt_count": int(r.attempt_count or 0),
+                    "accuracy": (
+                        round(total_correct / total_possible, 4)
+                        if total_possible
+                        else 0.0
+                    ),
+                    "last_attempt": (
+                        r.last_attempt.isoformat() if r.last_attempt else None
+                    ),
+                }
+            )
         return results
 
     def get_recent_scores(self, limit: int = 20) -> List[Dict[str, Any]]:
         """Latest scores with document title for the badge feed."""
         from app.database.models import DocumentModel
+
         rows = (
             self._db.query(
                 ScoreModel.id,

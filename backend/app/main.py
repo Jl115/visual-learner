@@ -6,18 +6,18 @@ Usage:
     # or
     python -m app.main
 """
+
 from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from app.application import Application
 from app.config import get_settings
 from app.middleware.error_handler import setup_exception_handlers
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 

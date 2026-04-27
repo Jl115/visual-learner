@@ -5,6 +5,7 @@ Provides shared fixtures for the entire test suite:
 - client  : FastAPI TestClient
 - ollama_mock : mock Ollama responses
 """
+
 import sys
 from pathlib import Path
 
@@ -19,6 +20,7 @@ sys.path.insert(0, str(project_root))
 
 
 # ── Fixtures ────────────────────────────────────────────────────────
+
 
 @pytest.fixture(scope="function")
 def test_db() -> Session:

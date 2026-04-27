@@ -1,5 +1,6 @@
 from typing import List
-from app.entities.quiz import Quiz, Question
+
+from app.entities.quiz import Question, Quiz
 from app.services.ollama_client import OllamaClient
 
 
@@ -9,4 +10,10 @@ class QuizEngine:
 
     async def generate_quiz(self, document_text: str) -> Quiz:
         # Placeholder – real implementation calls Ollama for question generation
-        return Quiz(questions=[Question(text="Sample question?", options=["A", "B", "C"], correct_index=0)])
+        return Quiz(
+            questions=[
+                Question(
+                    text="Sample question?", options=["A", "B", "C"], correct_index=0
+                )
+            ]
+        )

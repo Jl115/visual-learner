@@ -1,18 +1,19 @@
 """Tests for score persistence, repository, and service."""
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
 from app.database.models import Base, DocumentModel, QuizModel, ScoreModel
 from app.entities.score import Score
 from app.repositories.score_repo import ScoreRepository
 from app.services.score_service import ScoreService
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 
 @pytest.fixture
 def db():
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite:///:memory:", connect_args={"check_same_thread": False}
+    )
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     Base.metadata.create_all(bind=engine)
     session = SessionLocal()

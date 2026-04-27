@@ -1,12 +1,14 @@
 """Score DTOs for API request/response shapes."""
 
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
 
 class ScoreCreateRequest(BaseModel):
     """POST /scores body."""
+
     doc_id: int = Field(..., gt=0, description="Document ID the quiz belongs to")
     quiz_id: int = Field(..., gt=0, description="Quiz ID that was taken")
     correct_count: int = Field(..., ge=0, description="Number of correct answers")
@@ -15,6 +17,7 @@ class ScoreCreateRequest(BaseModel):
 
 class ScoreResponse(BaseModel):
     """Single score record."""
+
     id: int
     doc_id: int
     quiz_id: int
@@ -41,6 +44,7 @@ class ScoreResponse(BaseModel):
 
 class DocumentStatsResponse(BaseModel):
     """Aggregated performance for one document (chart data)."""
+
     doc_id: int
     doc_title: Optional[str] = None
     total_correct: int
@@ -52,14 +56,17 @@ class DocumentStatsResponse(BaseModel):
 
 class ScoreListResponse(BaseModel):
     """List wrapper."""
+
     items: List[ScoreResponse]
 
 
 class AllDocumentStatsResponse(BaseModel):
     """Wrapper for per-document aggregated stats."""
+
     items: List[DocumentStatsResponse]
 
 
 class RecentScoresResponse(BaseModel):
     """Recent score feed for the StatsBadge."""
+
     items: List[dict]

@@ -11,6 +11,11 @@ pythonpath = ["backend", "backend/app"]
 namespace_packages = true
 explicit_package_bases = true
 
+[tool.isort]
+profile = "black"
+line_length = 88
+src_paths = ["backend"]
+
 [[tool.mypy.overrides]]
 module = [
     "uvicorn.*",

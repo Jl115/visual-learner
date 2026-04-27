@@ -1,10 +1,13 @@
 """Edge DTOs."""
+
 from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
 class EdgeResponse(BaseModel):
     """Response shape for a graph edge."""
+
     id: int
     source: int = Field(..., alias="source_node_id")
     target: int = Field(..., alias="target_node_id")

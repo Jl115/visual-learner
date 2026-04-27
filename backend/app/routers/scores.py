@@ -1,19 +1,19 @@
 """Score routes — full CRUD + aggregation."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fastapi import APIRouter, Depends, HTTPException, status
-
-from app.dto.scores import (
-    ScoreCreateRequest,
-    ScoreResponse,
-    ScoreListResponse,
-    DocumentStatsResponse,
-    AllDocumentStatsResponse,
-    RecentScoresResponse,
-)
 from app.dependencies import get_score_repo
+from app.dto.scores import (
+    AllDocumentStatsResponse,
+    DocumentStatsResponse,
+    RecentScoresResponse,
+    ScoreCreateRequest,
+    ScoreListResponse,
+    ScoreResponse,
+)
+from fastapi import APIRouter, Depends, HTTPException, status
 
 if TYPE_CHECKING:
     from app.repositories.score_repo import ScoreRepository
@@ -21,7 +21,9 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/scores")
 
 
-@router.post("/", summary="Record a new quiz score", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", summary="Record a new quiz score", status_code=status.HTTP_201_CREATED
+)
 async def create_score(
     req: ScoreCreateRequest,
     repo: "ScoreRepository" = Depends(get_score_repo),
@@ -46,6 +48,7 @@ async def list_scores(
 ) -> ScoreListResponse:
     """Return the latest score entries (newest first)."""
     from pydantic import TypeAdapter
+
     scores = repo.list_all(limit=50)
     items = [ScoreResponse.from_entity(s) for s in scores]
     return ScoreListResponse(items=items)
@@ -78,9 +81,7 @@ async def get_all_document_stats(
 ) -> AllDocumentStatsResponse:
     """Per-document aggregated data — used for the dashboard bar chart."""
     items = repo.get_all_document_stats()
-    return AllDocumentStatsResponse(
-        items=[DocumentStatsResponse(**s) for s in items]
-    )
+    return AllDocumentStatsResponse(items=[DocumentStatsResponse(**s) for s in items])
 
 
 @router.get("/recent", summary="Recent activity feed")

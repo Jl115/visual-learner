@@ -1,4 +1,5 @@
 """Quiz session routes using DI container."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

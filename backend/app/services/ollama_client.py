@@ -1,5 +1,6 @@
-import httpx
 from typing import Any, Dict
+
+import httpx
 
 DEFAULT_BASE_URL = "http://localhost:11434"
 DEFAULT_MODEL = "llama3.1"
@@ -22,7 +23,9 @@ class OllamaClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
         return headers
 
-    async def generate(self, prompt: str, model: str | None = None, **kwargs: Any) -> Dict[str, Any]:
+    async def generate(
+        self, prompt: str, model: str | None = None, **kwargs: Any
+    ) -> Dict[str, Any]:
         _model = model or self.model
         async with httpx.AsyncClient() as client:
             response = await client.post(

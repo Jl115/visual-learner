@@ -1,11 +1,11 @@
 """Document lifecycle state machine with transition rules and progress tracking."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
 from app.dto.documents import DocumentState
-
 
 # ─── transition table ──────────────────────────────────────────────
 _TRANSITIONS: dict[DocumentState, set[DocumentState]] = {
@@ -185,13 +185,16 @@ class ProgressTracker:
 
 # ─── shared helpers for services ─────────────────────────────────
 
+
 def default_progress_callback(
     on_change: Optional[Callable[[DocumentState, float], None]] = None,
 ) -> StateCallback:
     """Factory returning a callback that forwards *(state, overall)* pairs."""
+
     def _cb(_from: DocumentState, to: DocumentState, overall: float) -> None:
         if on_change is not None:
             on_change(to, overall)
+
     return _cb
 
 

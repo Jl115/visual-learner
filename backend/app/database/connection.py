@@ -1,4 +1,5 @@
 """Database connection manager."""
+
 from __future__ import annotations
 
 import os
@@ -6,11 +7,10 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Generator
 
+from app.config import get_settings
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
-
-from app.config import get_settings
 
 DEFAULT_DB_PATH = Path.home() / ".visual-learner" / "data.sqlite"
 TEST_DB_URL = "sqlite:///:memory:"

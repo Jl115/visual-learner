@@ -1,4 +1,5 @@
 """Global exception handler — returns consistent JSON error responses."""
+
 from __future__ import annotations
 
 from fastapi import FastAPI, Request
@@ -13,7 +14,9 @@ def _error_payload(error: str, detail: str, status_code: int) -> JSONResponse:
     )
 
 
-async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+async def http_exception_handler(
+    request: Request, exc: StarletteHTTPException
+) -> JSONResponse:
     return _error_payload(
         error=type(exc).__name__,
         detail=str(exc.detail),

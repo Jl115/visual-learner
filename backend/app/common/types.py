@@ -1,4 +1,4 @@
-from typing import NewType, Dict, Any
+from typing import Any, Dict, NewType
 
 JsonDict = Dict[str, Any]
 DocumentId = NewType("DocumentId", int)
