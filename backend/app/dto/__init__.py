@@ -2,6 +2,7 @@
 
 from app.dto.documents import CreateDocumentRequest, DocumentResponse, DocumentState
 from app.dto.edges import EdgeResponse
+from app.dto.graphs import GraphResponse, GraphNodeResponse, GraphEdgeResponse
 from app.dto.nodes import CreateNodeRequest, NodeResponse
 from app.dto.progress import DocumentStatusResponse, ProgressResponse
 from app.dto.quizzes import Question, QuizAnswerRequest, QuizResponse, QuizResult
@@ -21,6 +22,9 @@ __all__ = [
     "CreateNodeRequest",
     "NodeResponse",
     "EdgeResponse",
+    "GraphResponse",
+    "GraphNodeResponse",
+    "GraphEdgeResponse",
     "QuizResponse",
     "Question",
     "QuizAnswerRequest",
