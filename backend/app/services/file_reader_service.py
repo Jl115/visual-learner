@@ -4,6 +4,7 @@ FileReaderService — encapsulates all file I/O for the backend.
 Reads binary content, validates size limits, and normalises errors
 so the Electron IPC layer never touches bare ``fs`` calls.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +17,9 @@ class FileReaderError(Exception):
 
     code: str = "FILE_READER_ERROR"
 
-    def __init__(self, message: str, code_attr: str | None = None) -> None:  # noqa: N803
+    def __init__(
+        self, message: str, code_attr: str | None = None
+    ) -> None:  # noqa: N803
         super().__init__(message)
         self.message = message
         if code_attr:
@@ -67,7 +70,9 @@ class FileReaderService(IFileReader):
         try:
             stat = await asyncio.to_thread(path.stat)
         except FileNotFoundError as exc:
-            raise FileReadError(f"File not found: {file_path}", "FILE_NOT_FOUND") from exc
+            raise FileReadError(
+                f"File not found: {file_path}", "FILE_NOT_FOUND"
+            ) from exc
         except OSError as exc:
             raise FileReadError(f"Cannot stat file: {exc}", "FILE_STAT_ERROR") from exc
 
@@ -80,7 +85,9 @@ class FileReaderService(IFileReader):
         try:
             return await asyncio.to_thread(path.read_bytes)
         except OSError as exc:
-            raise FileReadError(f"Failed to read file: {exc}", "FILE_READ_ERROR") from exc
+            raise FileReadError(
+                f"Failed to read file: {exc}", "FILE_READ_ERROR"
+            ) from exc
 
     async def read_chunks(
         self,
@@ -111,9 +118,13 @@ class FileReaderService(IFileReader):
         try:
             chunks = await asyncio.to_thread(_read)
         except FileNotFoundError as exc:
-            raise FileReadError(f"File not found: {file_path}", "FILE_NOT_FOUND") from exc
+            raise FileReadError(
+                f"File not found: {file_path}", "FILE_NOT_FOUND"
+            ) from exc
         except OSError as exc:
-            raise FileReadError(f"Failed to read file: {exc}", "FILE_READ_ERROR") from exc
+            raise FileReadError(
+                f"Failed to read file: {exc}", "FILE_READ_ERROR"
+            ) from exc
 
         total = sum(len(c) for c in chunks)
         if total > limit:

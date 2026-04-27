@@ -12,6 +12,7 @@ payload shape, and return type shared between:
 The classes below are pure data-contracts; they carry no Electron runtime
 imports so they can be imported by backend unit tests and type-checked safely.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -82,7 +83,7 @@ class FileBufferHandler(IpcHandler[ReadFileRequest]):
 
     channel = IpcChannels.READ_FILE_BUFFER
 
-    def __init__(self, file_reader: 'IFileReader') -> None:
+    def __init__(self, file_reader: "IFileReader") -> None:
         self._reader = file_reader
 
     async def handle(self, payload: ReadFileRequest) -> bytes:

@@ -7,10 +7,9 @@ import shutil
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-
 from app.dependencies import ContainerDep
 from app.dto.documents import CreateDocumentRequest
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,9 @@ _UPLOAD_DIR = Path.home() / ".visual-learner" / "uploads"
 )
 async def upload_document(
     container: ContainerDep,
-    file: Annotated[UploadFile, File(..., description="Binary document file (PDF, TXT, MD, DOCX)")],
+    file: Annotated[
+        UploadFile, File(..., description="Binary document file (PDF, TXT, MD, DOCX)")
+    ],
 ) -> dict[str, str]:
     """Receive raw binary, persist to disk, create a Document record, and return metadata."""
     if not file.filename:

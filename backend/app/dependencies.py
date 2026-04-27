@@ -23,10 +23,10 @@ from app.repositories.edge_repo import EdgeRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
 from app.repositories.score_repo import ScoreRepository
+from app.services.file_reader_service import FileReaderService
 from app.services.graph_service import GraphService
 from app.services.ollama_client import OllamaClient
 from app.services.quiz_service import QuizEngine
-from app.services.file_reader_service import FileReaderService
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
