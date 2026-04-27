@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.dto import DocumentStatusResponse
+from app.dto.progress import DocumentStatusResponse
 from app.services.state_machine import ProgressTracker
 from fastapi import APIRouter, Path
 
