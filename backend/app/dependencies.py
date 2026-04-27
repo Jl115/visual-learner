@@ -23,8 +23,10 @@ from app.repositories.edge_repo import EdgeRepository
 from app.repositories.node_repo import NodeRepository
 from app.repositories.quiz_repo import QuizRepository
 from app.repositories.score_repo import ScoreRepository
+from app.repositories.user_node_state_repo import UserNodeStateRepository
 from app.services.file_reader_service import FileReaderService
 from app.services.graph_service import GraphService
+from app.services.mastery_service import MasteryService
 from app.services.ollama_client import OllamaClient
 from app.services.quiz_service import QuizEngine
 from fastapi import Depends
@@ -84,3 +86,7 @@ def get_ollama_client(container: ContainerDep) -> OllamaClient:
 
 def get_file_reader_service(container: ContainerDep) -> FileReaderService:
     return container.file_reader_service
+
+
+def get_mastery_service(container: ContainerDep) -> MasteryService:
+    return MasteryService(container._resolve_db(), container.user_state_repository)
