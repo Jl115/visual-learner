@@ -35,4 +35,5 @@ class OllamaClient:
                 timeout=120.0,
             )
             response.raise_for_status()
-            return response.json()
+            data: Dict[str, Any] = response.json()
+            return data
