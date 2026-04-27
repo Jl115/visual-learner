@@ -72,7 +72,7 @@ class Container:
     @property
     def nlp_pipeline(self) -> NLPPipeline:
         if self._nlp is None:
-            self._nlp = NLPPipeline()
+            self._nlp = NLPPipeline(ollama=self.ollama_client)
         return self._nlp
 
     @property
