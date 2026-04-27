@@ -9,5 +9,6 @@ from app.routers.graphs import router as graphs
 from app.routers.progress import router as progress
 from app.routers.quizzes import router as quizzes
 from app.routers.scores import router as scores
+from app.routers.upload import router as upload
 
-__all__ = ["documents", "graphs", "progress", "quizzes", "scores"]
+__all__ = ["documents", "graphs", "progress", "quizzes", "scores", "upload"]

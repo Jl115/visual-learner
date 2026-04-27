@@ -14,13 +14,14 @@ class Application:
     def register_routes(self) -> None:
         api_router = APIRouter(prefix="/api/v1")
 
-        from app.routers import documents, graphs, progress, quizzes, scores
+        from app.routers import documents, graphs, progress, quizzes, scores, upload
 
         api_router.include_router(documents, tags=["Documents"])
         api_router.include_router(graphs, tags=["Graphs"])
         api_router.include_router(quizzes, tags=["Quizzes"])
         api_router.include_router(progress, tags=["Progress"])
         api_router.include_router(scores, tags=["Scores"])
+        api_router.include_router(upload, tags=["Upload"])
 
         self.app.include_router(api_router)
 
