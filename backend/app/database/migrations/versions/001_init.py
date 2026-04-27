@@ -1,7 +1,7 @@
 """Initial migration: create all tables.
 
 Revision ID: 001_init
-Revises: 
+Revises:
 Create Date: 2026-04-26
 
 """

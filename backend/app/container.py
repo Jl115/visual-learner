@@ -1,4 +1,5 @@
 """Backend application container."""
+
 from __future__ import annotations
 
 # Re-export the production DI container so routers can import from a stable
